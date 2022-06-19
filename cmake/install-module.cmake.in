@@ -1,0 +1,30 @@
+
+cmake_minimum_required(VERSION 3.20)
+
+project(
+  @SUPERBUILD_NAME@-module
+  LANGUAGES
+    C
+    CXX
+)
+
+set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_INSTALL_PREFIX @SUPERBUILD_INSTALL_PATH@)
+set(CMAKE_MODULE_PATH @CMAKE_MODULE_PATH@)
+
+include(FetchContent)
+include(ExternalProject)
+include(install-module)
+
+
+build_subproject(
+  NAME @SUPERBUILD_NAME@
+  GIT @SUPERBUILD_GIT@
+  TAG @SUPERBUILD_TAG@
+  SOURCE_PATH @SUPERBUILD_SOURCE_PATH@
+  INSTALL_PATH @SUPERBUILD_INSTALL_PATH@
+  BUILD_ARGS
+    @SUPERBUILD_BUILD_ARGS@
+)
+
+
