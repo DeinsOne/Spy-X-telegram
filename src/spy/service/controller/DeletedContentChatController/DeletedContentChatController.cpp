@@ -175,6 +175,7 @@ void spy::service::controller::DeletedContentChatController::CreateDeletedConten
     SendHelpInfo(handler);
 }
 
+// FIXME: Optimize with multithreading
 void spy::service::controller::DeletedContentChatController::GetDeletedContentChatOwner(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
     // Get me to access my id
     auto mePromise = handler->Execute<td::td_api::getMe>();

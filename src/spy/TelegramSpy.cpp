@@ -12,7 +12,7 @@
 #include <spy/service/controller/ControllersHandler.hpp>
 
 #include <spy/controller/StaticController.hpp>
-
+#include <spy/controller/ChatsController/ChatsController.hpp>
 
 int main(int argc, char** argv) {
     /* Parse command line arguments */
@@ -60,7 +60,8 @@ int main(int argc, char** argv) {
         OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 
         /* Add endpoints */
-        router->addController(spy::controller::StaticController::createShared());
+        // router->addController(spy::controller::StaticController::createShared());
+        router->addController(spy::controller::ChatsController::createShared());
 
         /* Initialize server */
         OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, connectionHandler);

@@ -2,7 +2,7 @@
 #ifndef spy_Service
 #define spy_Service
 
-#include <spy/db/MessagesDb.hpp>
+#include <spy/db/MessagesDatabase/MessagesDatabase.hpp>
 #include <oatpp/core/macro/component.hpp>
 
 #include <spy/service/controller/ControllersHandler.hpp>
@@ -61,7 +61,7 @@ namespace spy { namespace service {
         // void onUpdateFile(td::td_api::updateFile update);
 
     private:
-        OATPP_COMPONENT(std::shared_ptr<db::MessagesDb>, messagesDb);
+        OATPP_COMPONENT(std::shared_ptr<db::MessagesDatabase>, messagesDb);
 
         std::shared_ptr<tdlpp::base::TdlppHandler> tdlppHandler;
         std::shared_ptr<controller::ControllersHandler> controllersHandler;

@@ -1,10 +1,17 @@
 
 cmake_minimum_required(VERSION 3.20)
 
+file(STRINGS 
+  ${CMAKE_CURRENT_LIST_DIR}/src/spy/version.h
+  SPY_VERSION_MACRO REGEX "#define SPY_VERSION_STRING \"[0-9]+.[0-9]+.[0-9]+\"$"
+)
+string(REGEX REPLACE
+  "#define SPY_VERSION_STRING \"([0-9]+.[0-9]+.[0-9]+)\"$" "\\1"
+  SPY_VERSION "${SPY_VERSION_MACRO}"
+)
+
 project(TelegramSpyBackend 
-  VERSION 0.1.2
-  LANGUAGES
-    CXX
+  VERSION ${SPY_VERSION} LANGUAGES CXX
 )
 
 set(CMAKE_CXX_STANDARD 14)

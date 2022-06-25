@@ -4,7 +4,7 @@
 
 #include <spy/service/controller/BaseController.hpp>
 #include <oatpp/core/macro/component.hpp>
-#include <spy/db/MessagesDb.hpp>
+#include <spy/db/MessagesDatabase/MessagesDatabase.hpp>
 
 namespace spy { namespace service { namespace controller {
 
@@ -24,7 +24,7 @@ namespace spy { namespace service { namespace controller {
         void onUpdateDeleteMessages(td::td_api::updateDeleteMessages& update, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
         void onUpdateMessageContent(td::td_api::updateMessageContent& update, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
 
-        OATPP_COMPONENT(std::shared_ptr<db::MessagesDb>, messagesDb);
+        OATPP_COMPONENT(std::shared_ptr<db::MessagesDatabase>, messagesDb);
 
     private:
         void initiateFileDonwloading(td::td_api::MessageContent& content, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);

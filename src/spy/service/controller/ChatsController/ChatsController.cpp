@@ -34,17 +34,17 @@ void spy::service::controller::ChatsController::Initialize(const std::shared_ptr
 
     initialized = true;
 
-    // OATPP_LOGD("ChatsController", "PrivateChats: %d", privateChats.size());
-    // OATPP_LOGD("ChatsController", "SecretChats: %d", secretChats.size());
-    // OATPP_LOGD("ChatsController", "BasicGroups: %d", basicGroupsChats.size());
-    // OATPP_LOGD("ChatsController", "SupreGroups: %d", supergroupChats.size());
-    OATPP_LOGD("ChatsController", "Channels: %d", channelChats.size());
+
+    // OATPP_LOGD("ChatsController", "Channels: %d", channelChats.size());
     OATPP_LOGD("ChatsController", "Initialization finished. Fetched %d chats", chats.total_count_);
 }
 
 void spy::service::controller::ChatsController::RegisterUpdates(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
     handler->SetCallback<td::td_api::updateNewChat>(false, [&](td::td_api::updateNewChat& update) {
         InsertChat(*update.chat_);
+    });
+    handler->SetCallback<td::td_api::updateChatLastMessage>(false, [&](td::td_api::updateChatLastMessage& update) {
+        chatsDb->SetChatLastMessage(update.chat_id_, update.last_message_->id_);        
     });
 }
 
@@ -75,17 +75,27 @@ void spy::service::controller::ChatsController::InsertChat(td::td_api::chat& ori
                 supergroupChats.emplace_back(origin.id_);
             }
 
-
             if (chat.is_channel_) {
                 if (std::find(channelChats.begin(), channelChats.end(), origin.id_) == channelChats.end()) {
                     channelChats.emplace_back(origin.id_);
-
-                    // printf("   channel: %s\n", origin.title_.c_str());
                 }
             }
         },
         [](auto&) { }
     ));
+
+    auto chatDto = dto::Chat::createShared();
+    chatDto->id = origin.id_;
+    chatDto->title = origin.title_;
+    chatDto->fetchSince = StringTools::currentDatTime();
+    chatDto->fetched = chatDto->fetchSince;
+
+    if (origin.last_message_) {
+        chatDto->lastMessageId = origin.last_message_->id_;
+    }
+
+    // Try to add chat to chats database
+    chatsDb->addChat(chatDto);
 }
 
 

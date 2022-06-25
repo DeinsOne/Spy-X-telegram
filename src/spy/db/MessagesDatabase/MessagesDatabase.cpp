@@ -1,4 +1,4 @@
-#include <spy/db/MessagesDb.hpp>
+#include <spy/db/MessagesDatabase/MessagesDatabase.hpp>
 
 #include <oatpp/core/Types.hpp>
 #include <td/telegram/td_api.hpp>
@@ -7,7 +7,7 @@
 
 #include <spy/service/functions/FormattedTextToMarkdown.hpp>
 
-void spy::db::MessagesDb::addBaseMessage(td::td_api::message& message) {
+void spy::db::MessagesDatabase::addBaseMessage(td::td_api::message& message) {
     // Declare raw parameters
     std::unordered_map<oatpp::String, oatpp::Void> params;
 
@@ -35,7 +35,7 @@ void spy::db::MessagesDb::addBaseMessage(td::td_api::message& message) {
     );
 }
 
-void spy::db::MessagesDb::addMessageModification(const std::int64_t& message_id, const std::int64_t& chat_id, const std::int32_t& version, td::td_api::MessageContent& content) {
+void spy::db::MessagesDatabase::addMessageModification(const std::int64_t& message_id, const std::int64_t& chat_id, const std::int32_t& version, td::td_api::MessageContent& content) {
     // Declare raw parameters
     std::unordered_map<oatpp::String, oatpp::Void> params;
 
@@ -56,7 +56,7 @@ void spy::db::MessagesDb::addMessageModification(const std::int64_t& message_id,
     addMessageContent(message_id, chat_id, version, content);
 }
 
-void spy::db::MessagesDb::addDeletedModification(const std::int64_t& message_id, const std::int64_t& chat_id) {
+void spy::db::MessagesDatabase::addDeletedModification(const std::int64_t& message_id, const std::int64_t& chat_id) {
     // Get all message's modifications
     auto messageModifications = executeQuery("SELECT * FROM modifications WHERE id=:id AND chat_id=:chat_id ORDER BY version_ ASC;", 
         {
@@ -83,7 +83,7 @@ void spy::db::MessagesDb::addDeletedModification(const std::int64_t& message_id,
     );
 }
 
-void spy::db::MessagesDb::addMessageContent(const std::int64_t& message_id, const std::int64_t& chat_id, const std::int32_t& version, td::td_api::MessageContent& content) {
+void spy::db::MessagesDatabase::addMessageContent(const std::int64_t& message_id, const std::int64_t& chat_id, const std::int32_t& version, td::td_api::MessageContent& content) {
     // Declare message's content in database
     td::td_api::downcast_call(content, tdlpp::overloaded(
         [&](td::td_api::messageText& message) {
@@ -101,7 +101,7 @@ void spy::db::MessagesDb::addMessageContent(const std::int64_t& message_id, cons
             );
 
             if (!result->isSuccess()) {
-                OATPP_LOGE("MessagesDb", "addMessageContent(messageText): %s", result->getErrorMessage()->c_str());
+                OATPP_LOGE("MessagesDatabase", "addMessageContent(messageText): %s", result->getErrorMessage()->c_str());
             }
         },
         [&](td::td_api::messagePhoto& message) {
@@ -124,7 +124,7 @@ void spy::db::MessagesDb::addMessageContent(const std::int64_t& message_id, cons
             );
 
             if (!result->isSuccess()) {
-                OATPP_LOGE("MessagesDb", "addMessageContent(messagePhoto): %s", result->getErrorMessage()->c_str());
+                OATPP_LOGE("MessagesDatabase", "addMessageContent(messagePhoto): %s", result->getErrorMessage()->c_str());
             }
         },
         [&](td::td_api::messageVideo& message) {
@@ -149,7 +149,7 @@ void spy::db::MessagesDb::addMessageContent(const std::int64_t& message_id, cons
             );
 
             if (!result->isSuccess()) {
-                OATPP_LOGE("MessagesDb", "addMessageContent(messageVideo): %s", result->getErrorMessage()->c_str());
+                OATPP_LOGE("MessagesDatabase", "addMessageContent(messageVideo): %s", result->getErrorMessage()->c_str());
             }
         },
         [&](td::td_api::messageVoiceNote& message) {
@@ -171,7 +171,7 @@ void spy::db::MessagesDb::addMessageContent(const std::int64_t& message_id, cons
             );
 
             if (!result->isSuccess()) {
-                OATPP_LOGE("MessagesDb", "addMessageContent(messageVoiceNote): %s", result->getErrorMessage()->c_str());
+                OATPP_LOGE("MessagesDatabase", "addMessageContent(messageVoiceNote): %s", result->getErrorMessage()->c_str());
             }
         },
         [&](td::td_api::messageVideoNote& message) {
@@ -191,7 +191,7 @@ void spy::db::MessagesDb::addMessageContent(const std::int64_t& message_id, cons
             );
 
             if (!result->isSuccess()) {
-                OATPP_LOGE("MessagesDb", "addMessageContent(messageVideoNote): %s", result->getErrorMessage()->c_str());
+                OATPP_LOGE("MessagesDatabase", "addMessageContent(messageVideoNote): %s", result->getErrorMessage()->c_str());
             }
         },
         [&](td::td_api::messageDocument& message) {
@@ -212,7 +212,7 @@ void spy::db::MessagesDb::addMessageContent(const std::int64_t& message_id, cons
             );
 
             if (!result->isSuccess()) {
-                OATPP_LOGE("MessagesDb", "addMessageContent(messageVoiceNote): %s", result->getErrorMessage()->c_str());
+                OATPP_LOGE("MessagesDatabase", "addMessageContent(messageVoiceNote): %s", result->getErrorMessage()->c_str());
             }
         },
         [&](auto&) {}
@@ -220,7 +220,7 @@ void spy::db::MessagesDb::addMessageContent(const std::int64_t& message_id, cons
 }
 
 
-void spy::db::MessagesDb::AddMessage(td::td_api::message& message) {
+void spy::db::MessagesDatabase::AddMessage(td::td_api::message& message) {
     // Begin database transaction
     auto transaction = beginTransaction();
 
@@ -234,7 +234,7 @@ void spy::db::MessagesDb::AddMessage(td::td_api::message& message) {
     transaction.commit();
 }
 
-void spy::db::MessagesDb::AddMessageModification(const std::int64_t& message_id, const std::int64_t& chat_id, td::td_api::MessageContent& content) {
+void spy::db::MessagesDatabase::AddMessageModification(const std::int64_t& message_id, const std::int64_t& chat_id, td::td_api::MessageContent& content) {
     // Begin database transaction
     auto transaction = beginTransaction();
 
@@ -258,7 +258,7 @@ void spy::db::MessagesDb::AddMessageModification(const std::int64_t& message_id,
     transaction.commit();
 }
 
-void spy::db::MessagesDb::AddDeletedModifications(const std::vector<std::int64_t>& message_ids, const std::int64_t& chat_id) {
+void spy::db::MessagesDatabase::AddDeletedModifications(const std::vector<std::int64_t>& message_ids, const std::int64_t& chat_id) {
     // Begin database transaction
     auto transaction = beginTransaction();
 
@@ -270,7 +270,7 @@ void spy::db::MessagesDb::AddDeletedModifications(const std::vector<std::int64_t
     transaction.commit();
 }
 
-void spy::db::MessagesDb::AddFile(const std::string& id, const std::string& path, const std::size_t& size) {
+void spy::db::MessagesDatabase::AddFile(const std::string& id, const std::string& path, const std::size_t& size) {
     // Begin database transaction
     auto transaction = beginTransaction();
 
@@ -286,7 +286,7 @@ void spy::db::MessagesDb::AddFile(const std::string& id, const std::string& path
     );
 
     if (!result->isSuccess()) {
-        OATPP_LOGE("MessagesDb", "AddFile: %s", result->getErrorMessage()->c_str());
+        OATPP_LOGE("MessagesDatabase", "AddFile: %s", result->getErrorMessage()->c_str());
     }
 
     // Commit transaction to database

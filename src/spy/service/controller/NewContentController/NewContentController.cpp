@@ -95,7 +95,7 @@ void spy::service::controller::NewContentController::onUpdateFile(td::td_api::up
 
     // Copy file to local directory
     auto filename = fs::path(update.file_->local_->path_).filename();
-    auto newpath = "spydata/" / fs::path(StringTools::toLower(filename.extension().string().substr(1))) / filename;
+    auto newpath = SPY_DATA_FOLDER / fs::path(StringTools::toLower(filename.extension().string().substr(1))) / filename;
 
     // Skip if this file is already downloaded
     if (fs::is_regular_file(newpath)) return;

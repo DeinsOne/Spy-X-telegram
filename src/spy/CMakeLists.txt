@@ -10,7 +10,7 @@ add_executable(tgspy
   TelegramSpy.cpp
   auth/ConfigAuth.cpp
   auth/SpyAuth.cpp
-  db/MessagesDb.cpp
+  db/MessagesDatabase/MessagesDatabase.cpp
   service/SpyService.cpp
   service/functions/DownloadFile.cpp
   utils/StringTools.cpp
@@ -39,6 +39,9 @@ target_compile_definitions(tgspy
 
   ## Path to database migration scripts
   PRIVATE -DDATABASE_MIGRATIONS="resources/migrations/"
+
+  ## Folder to store spy's data
+  PRIVATE -DSPY_DATA_FOLDER="spydata/"
 )
 
 if (${SPY_ENABLE_OPTIMIZATION})

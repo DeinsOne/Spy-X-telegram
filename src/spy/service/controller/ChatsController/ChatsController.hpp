@@ -3,6 +3,8 @@
 #define spy_ChatsController
 
 #include <spy/service/controller/BaseController.hpp>
+#include <oatpp/core/macro/component.hpp>
+#include <spy/db/ChatsDatabase/ChatsDatabase.hpp>
 
 namespace spy { namespace service { namespace controller {
 
@@ -36,6 +38,8 @@ namespace spy { namespace service { namespace controller {
     private:
         void InsertChat(const std::int64_t& chat_id, td::td_api::ChatType& type);
         void InsertChat(td::td_api::chat& origin);
+
+        OATPP_COMPONENT(std::shared_ptr<db::ChatsDatabase>, chatsDb);
 
     };
 

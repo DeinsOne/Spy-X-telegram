@@ -11,9 +11,9 @@
 
 namespace spy { namespace db {
 
-    class SessionsDb : public oatpp::orm::DbClient {
+    class SessionsDatabase : public oatpp::orm::DbClient {
     public:
-        SessionsDb(const std::shared_ptr<oatpp::orm::Executor>& executor) : oatpp::orm::DbClient(executor) {
+        SessionsDatabase(const std::shared_ptr<oatpp::orm::Executor>& executor) : oatpp::orm::DbClient(executor) {
             oatpp::orm::SchemaMigration migration(executor);
 
             migration.addFile(1 /* start from version 1 */, DATABASE_MIGRATIONS "sessions-migration.sql");
