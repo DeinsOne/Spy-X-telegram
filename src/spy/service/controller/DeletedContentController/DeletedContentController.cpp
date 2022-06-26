@@ -8,7 +8,7 @@
 #include <spy/service/controller/ControllersHandler.hpp>
 #include <algorithm>
 
-#include <spy/service/functions/DownloadFile.hpp>
+#include <spy/service/functions/DownloadFile/DownloadFile.hpp>
 
 void spy::service::controller::DeletedContentController::Initialize(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
     initialized = true;

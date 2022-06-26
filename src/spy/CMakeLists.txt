@@ -12,7 +12,7 @@ add_executable(tgspy
   auth/SpyAuth.cpp
   db/MessagesDatabase/MessagesDatabase.cpp
   service/SpyService.cpp
-  service/functions/DownloadFile.cpp
+  service/functions/DownloadFile/DownloadFile.cpp
   service/functions/SendMessage/SendMessage.cpp
   utils/StringTools.cpp
   controller/ErrorHandler.cpp

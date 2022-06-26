@@ -7,7 +7,7 @@
 #include <spy/service/controller/ControllersHandler.hpp>
 #include <algorithm>
 
-#include <spy/service/functions/DownloadFile.hpp>
+#include <spy/service/functions/DownloadFile/DownloadFile.hpp>
 #include <spy/utils/StringTools.h>
 
 #if defined(WIN32) || defined(_WIN32)
