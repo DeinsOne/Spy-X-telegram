@@ -20,8 +20,13 @@ namespace spy { namespace db {
         ChatsDatabase(const std::shared_ptr<oatpp::orm::Executor>& executor) : oatpp::orm::DbClient(executor) {
             oatpp::orm::SchemaMigration migration(executor);
 
-            migration.addFile(1, DATABASE_MIGRATIONS "chats-migration.sql");
-            migration.migrate();
+            try {
+                migration.addFile(1, DATABASE_MIGRATIONS "chats-migration.sql");
+                migration.migrate();
+            }
+            catch (std::exception& err) {
+                OATPP_LOGE("Migration failed", "ChatsDatabase: %s", err.what())
+            }
         }
 
     public:

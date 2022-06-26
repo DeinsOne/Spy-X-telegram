@@ -16,13 +16,14 @@ namespace spy { namespace db {
         SessionsDatabase(const std::shared_ptr<oatpp::orm::Executor>& executor) : oatpp::orm::DbClient(executor) {
             oatpp::orm::SchemaMigration migration(executor);
 
-            migration.addFile(1 /* start from version 1 */, DATABASE_MIGRATIONS "sessions-migration.sql");
-            migration.addFile(2, DATABASE_MIGRATIONS "permissions-migration.sql");
-
-            migration.migrate();        // <-- run migrations. This guy will throw on error.
-
-            auto version = executor->getSchemaVersion();
-            // OATPP_LOGD("SessionsDb", "Migration - OK. Version=%lld.", version);
+            try {
+                migration.addFile(1, DATABASE_MIGRATIONS "sessions-migration.sql");
+                migration.addFile(2, DATABASE_MIGRATIONS "permissions-migration.sql");
+                migration.migrate();
+            }
+            catch (std::exception& err) {
+                OATPP_LOGE("Migration failed", "SessionsDatabase: %s", err.what())
+            }
         }
 
     };

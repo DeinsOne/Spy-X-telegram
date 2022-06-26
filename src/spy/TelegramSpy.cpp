@@ -14,6 +14,14 @@
 #include <spy/controller/StaticController.hpp>
 #include <spy/controller/ChatsController/ChatsController.hpp>
 
+#if !defined(WIN32) && !defined(_WIN32)
+    #include <experimental/filesystem>
+    namespace fs = std::experimental::filesystem;
+#else
+    #include <filesystem>
+    namespace fs = std::filesystem;
+#endif
+
 int main(int argc, char** argv) {
     /* Parse command line arguments */
     spy::utils::CmdParserSingleton::Get()->ParseArguments(argc, argv);
@@ -38,6 +46,9 @@ int main(int argc, char** argv) {
         }
     }
 
+
+    /* Create spy data folder */
+    fs::create_directories(SPY_DATA_FOLDER);
 
     /* Create database components */
     spy::db::DatabaseComponents dbcomponents;

@@ -22,10 +22,15 @@ namespace spy { namespace db {
         MessagesDatabase(const std::shared_ptr<oatpp::orm::Executor>& executor) : oatpp::orm::DbClient(executor) {
             oatpp::orm::SchemaMigration migration(executor);
 
-            migration.addFile(1 /* start from version 1 */, DATABASE_MIGRATIONS "messages-migration.sql");
-            migration.addFile(2, DATABASE_MIGRATIONS "messages-content.sql");
+            try {
+                migration.addFile(1, DATABASE_MIGRATIONS "messages-migration.sql");
+                migration.addFile(2, DATABASE_MIGRATIONS "messages-content.sql");
 
-            migration.migrate();        // <-- run migrations. This guy will throw on error.
+                migration.migrate();        // <-- run migrations. This guy will throw on error.
+            }
+            catch (std::exception& err) {
+                OATPP_LOGE("Migration failed", "MessagesDatabase: %s", err.what())
+            }
         }
 
     public:
