@@ -7,6 +7,7 @@
 #define SPY_DELETED_CONTENT_CHAT_TITLE "Deleted Content #spy"
 #define SPY_DELETED_CONTENT_CHAT_DESCRIPTION "TelegramSpy is a powerful application which, at first, stores edited, deleted and secret messages. It provides rest api to allow external app to use telegram features"
 
+#include <spy/service/controller/DeletedContentChatController/Command/ICommand.hpp>
 
 namespace spy { namespace service { namespace controller {
 
@@ -38,6 +39,7 @@ namespace spy { namespace service { namespace controller {
         std::int64_t deletedContentSupergroupChatId;
 
         bool canProcessCommands{false};
+        std::shared_ptr<command::ICommand> command;
 
     };
 

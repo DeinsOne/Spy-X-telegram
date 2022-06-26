@@ -13,6 +13,7 @@ add_executable(tgspy
   db/MessagesDatabase/MessagesDatabase.cpp
   service/SpyService.cpp
   service/functions/DownloadFile.cpp
+  service/functions/SendMessage/SendMessage.cpp
   utils/StringTools.cpp
   controller/ErrorHandler.cpp
   service/controller/ChatsController/ChatsController.cpp
@@ -20,6 +21,9 @@ add_executable(tgspy
   service/controller/NewContentController/NewContentController.cpp
   service/controller/DeletedContentController/DeletedContentController.cpp
   service/controller/DeletedContentChatController/DeletedContentChatController.cpp
+  service/controller/DeletedContentChatController/Command/CommandHandler.cpp
+  service/controller/DeletedContentChatController/Command/HelpCommand/HelpCommand.cpp
+  service/controller/DeletedContentChatController/Command/SetChatGroupTypeCommand/SetChatGroupTypeCommand.cpp
 )
 target_link_libraries(tgspy
   PUBLIC tdlpp

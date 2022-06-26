@@ -5,7 +5,7 @@
 #include <tdlpp/tdlpp.hpp>
 #include <spy/utils/StringTools.h>
 
-#include <spy/service/functions/FormattedTextToMarkdown.hpp>
+#include <spy/service/functions/Utils/FormattedTextToMarkdown.hpp>
 
 void spy::db::MessagesDatabase::addBaseMessage(td::td_api::message& message) {
     // Declare raw parameters

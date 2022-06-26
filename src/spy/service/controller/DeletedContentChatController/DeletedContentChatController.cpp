@@ -7,6 +7,10 @@
 
 #include <spy/utils/StringTools.h>
 
+#include <spy/service/controller/DeletedContentChatController/Command/CommandHandler.hpp>
+#include <spy/service/controller/DeletedContentChatController/Command/HelpCommand/HelpCommand.hpp>
+
+
 void spy::service::controller::DeletedContentChatController::Initialize(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
     OATPP_LOGD("DeletedContentChatController", "Initialize");
 
@@ -53,55 +57,37 @@ void spy::service::controller::DeletedContentChatController::onUpdateNewMessage(
     // Skip message if is not in deleted content chat or have no permission
     if (update.message_->chat_id_ != deletedContentSupergroupChatId || !canProcessCommands) return;
 
-    // Match if message is a command
-    if (
-        update.message_->content_->get_id() != td::td_api::messageText::ID ||
-        StringTools::endsWith(static_cast<td::td_api::messageText&>(*update.message_->content_).text_->text_, "/")
-    ) return;
+    // Return if can not process message text
+    if (update.message_->content_->get_id() != td::td_api::messageText::ID) return;
+    auto messageText = static_cast<td::td_api::messageText&>(*update.message_->content_).text_->text_;
 
-    auto messageCommand = static_cast<td::td_api::messageText&>(*update.message_->content_).text_->text_;
-    if (StringTools::toLower(messageCommand) == "/help") {
-        SendHelpInfo(handler);
+
+    // Process cancel command
+    if (this->command && command::getCommandName(messageText) == "/cancel") {
+        this->command->Cencel();
+        this->command.reset();
+    }
+
+    // If command was empty
+    else if (!this->command) {
+        if (StringTools::startsWith(messageText, "/")) {
+            this->command = command::matchCreateCommand(messageText, handler, this->service);
+        }
+    }
+
+    // Process command
+    if (this->command) {
+        this->command->Process(messageText);
+
+        if (this->command->IsDone()) {
+            this->command.reset();
+        }
     }
 }
 
 void spy::service::controller::DeletedContentChatController::SendHelpInfo(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
-    const std::string text = "" \
-    "*'Deleted Content #spy'* is a supergroup " \
-    "created by *TelegramSpy* application, for " \
-    "notifying user about deleted content such as " \
-    "photos, videos, audio and video notes.\n\n" \
-    "You can send case insensitive commands the " \
-    "same way as to bots.\n\n" \
-    "*Commands list*:\n" \
-    " - /help";
-
-    auto textParseMarkdown = td::td_api::make_object<td::td_api::textParseModeMarkdown>(1);
-    auto parseTextEntities = td::td_api::make_object<td::td_api::parseTextEntities>(text, std::move(textParseMarkdown));
-
-    td::Client::Request parseRequest { 123, std::move(parseTextEntities) };
-    auto parseResponse = td::Client::execute(std::move(parseRequest));
-
-    auto formattedText = td::td_api::make_object<td::td_api::formattedText>();
-
-    if (parseResponse.object->get_id() == td::td_api::formattedText::ID) {
-        formattedText = td::td_api::move_object_as<td::td_api::formattedText>(parseResponse.object);
-    }
-    else {
-        std::vector<td::td_api::object_ptr<td::td_api::textEntity>> entities;
-        formattedText = td::td_api::make_object<td::td_api::formattedText>(text, std::move(entities));
-    }
-
-    handler->Execute<td::td_api::sendMessage>(
-        deletedContentSupergroupChatId,
-        0,
-        0,
-        td::td_api::make_object<td::td_api::messageSendOptions>(false, true, false, nullptr),
-        nullptr,
-        td::td_api::make_object<td::td_api::inputMessageText>(
-            std::move(formattedText), true, false
-        )
-    );
+    auto helpCommand = command::HelpCommand::makeCommand(handler, this->service);
+    helpCommand->Process("/help");
 }
 
 
