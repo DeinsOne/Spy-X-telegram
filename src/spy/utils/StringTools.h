@@ -35,6 +35,13 @@ bool endsWith(const std::string& str1, const std::string& str2);
 void split(const std::string& str, char delimiter, std::vector<std::string>& dest);
 
 /**
+ * @brief Function to remove witespaces in the beggining and ending of a string
+ * @param str Source string
+ * @return std::string Matching string
+ */
+std::string trim(const std::string& str);
+
+/**
  * Generates pseudo random string. It's recommended to call srand before this method.
  * @param length Length of resulting string.
  */

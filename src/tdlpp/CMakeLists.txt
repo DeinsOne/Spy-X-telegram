@@ -1,5 +1,5 @@
 
-find_package(Td REQUIRED)
+find_package(Td REQUIRED NO_DEFAULT_PATH)
 find_package(OpenSSL REQUIRED)
 find_package(ZLIB REQUIRED)
 
@@ -16,10 +16,11 @@ add_library(tdlpp SHARED
   router/Router.cpp
   ${TDLPP_BINDING_HEADER}
 )
+add_dependencies(tdlpp binding_generator)
 
 target_include_directories(tdlpp PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ ${CMAKE_BINARY_DIR})
 target_link_libraries(tdlpp PUBLIC ${OPENSSL_CRYPTO_LIBRARY} ${OPENSSL_SSL_LIBRARY} ${ZLIB_LIBRARIES})
-target_link_libraries(tdlpp PRIVATE Td::TdStatic)
+target_link_libraries(tdlpp PUBLIC Td::TdStatic)
 
 
 if (${SPY_ENABLE_OPTIMIZATION})

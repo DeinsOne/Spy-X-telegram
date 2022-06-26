@@ -57,6 +57,19 @@ void split(const string& str, char delimiter, vector<string>& dest) {
     }
 }
 
+std::string trim(const std::string& str) {
+    std::string output = str;
+
+    while (output.back() == ' ') {
+        output.erase(output.size() - 1);
+    }
+    while (output.front() == ' ') {
+        output.erase(0, 1);
+    }
+
+    return output;
+}
+
 string generateRandomString(std::size_t length) {
     static const string chars("qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890-=[]\\',./!@#$%^&*()_+{}|:\"<>?`~");
        
