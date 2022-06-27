@@ -5,6 +5,7 @@
 
 #include <spy/service/controller/DeletedContentChatController/Command/HelpCommand/HelpCommand.hpp>
 #include <spy/service/controller/DeletedContentChatController/Command/SetChatGroupTypeCommand/SetChatGroupTypeCommand.hpp>
+#include <spy/service/controller/DeletedContentChatController/Command/SetExcludeChannelsCommand/SetExcludeChannelsCommand.hpp>
 
 
 std::string spy::service::controller::command::getCommandName(const std::string& commandLine) {
@@ -22,7 +23,8 @@ std::shared_ptr<spy::service::controller::command::ICommand> spy::service::contr
     // Static id bindings
     static const std::unordered_map<std::string, std::int64_t> nameToIdBindings = {
         { "/help", spy::service::controller::command::HelpCommand::ID },
-        { "/setchatgrouptype", spy::service::controller::command::SetChatGroupTypeCommand::ID }
+        { "/setchatgrouptype", spy::service::controller::command::SetChatGroupTypeCommand::ID },
+        { "/setexcludechannels", spy::service::controller::command::SetExcludeChannelsCommand::ID }
         // TODO: add new name-class binding here
     };
 
@@ -38,6 +40,9 @@ std::shared_ptr<spy::service::controller::command::ICommand> spy::service::contr
         }
         case (spy::service::controller::command::SetChatGroupTypeCommand::ID): {
             return spy::service::controller::command::SetChatGroupTypeCommand::makeCommand(tdHandler, controllerHandler);
+        }
+        case (spy::service::controller::command::SetExcludeChannelsCommand::ID): {
+            return spy::service::controller::command::SetExcludeChannelsCommand::makeCommand(tdHandler, controllerHandler);
         }
         // TODO: add new name-class binding here
     }

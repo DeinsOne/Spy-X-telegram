@@ -25,6 +25,7 @@ void spy::service::controller::command::HelpCommand::Process(const std::string& 
     "same way as to bots.\n\n" \
     "*Commands list*:\n" \
     " - `/setchatgrouptype`\n" \
+    " - `/setexcludechannels`\n" \
     " - `/cancel`\n" \
     " - `/help`";
 
