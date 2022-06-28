@@ -32,8 +32,6 @@ namespace spy { namespace service { namespace controller {
 
         void onUpdateNewMessage(td::td_api::updateNewMessage& update, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
 
-        void SendHelpInfo(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
-
     protected:
         std::int64_t deletedContentSupergroupId;
         std::int64_t deletedContentSupergroupChatId;

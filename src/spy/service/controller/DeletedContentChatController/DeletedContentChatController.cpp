@@ -85,12 +85,6 @@ void spy::service::controller::DeletedContentChatController::onUpdateNewMessage(
     }
 }
 
-void spy::service::controller::DeletedContentChatController::SendHelpInfo(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
-    auto helpCommand = command::HelpCommand::makeCommand(handler, this->service);
-    helpCommand->Process("/help");
-}
-
-
 void spy::service::controller::DeletedContentChatController::FindDeletedContentChat(const std::vector<std::int64_t>& chat_ids, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
     std::condition_variable condition;
     std::int64_t loadedChats = 0;
@@ -158,7 +152,9 @@ void spy::service::controller::DeletedContentChatController::CreateDeletedConten
         )
     );
 
-    SendHelpInfo(handler);
+    // Send help info
+    auto helpCommand = command::HelpCommand::makeCommand(handler, this->service);
+    helpCommand->Process("/help");
 }
 
 // FIXME: Optimize with multithreading
