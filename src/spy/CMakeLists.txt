@@ -25,6 +25,7 @@ add_executable(tgspy
   service/controller/DeletedContentChatController/Command/HelpCommand/HelpCommand.cpp
   service/controller/DeletedContentChatController/Command/SetChatGroupTypeCommand/SetChatGroupTypeCommand.cpp
   service/controller/DeletedContentChatController/Command/SetExcludeChannelsCommand/SetExcludeChannelsCommand.cpp
+  service/controller/DeletedContentChatController/Command/SaveDeletedCommand/SaveDeletedCommand.cpp
 )
 target_link_libraries(tgspy
   PUBLIC tdlpp
