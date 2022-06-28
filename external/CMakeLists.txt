@@ -40,6 +40,23 @@ if ((${SPY_PACKAGED_BUILD}) OR (${INSTALL_JSONCPP}))
 endif()
 
 ##########################################################################
+## plog
+
+if (NOT ${SPY_PACKAGED_BUILD})
+  find_package(plog QUIET)
+
+  if (NOT ${plog_FOUND})
+    set(INSTALL_PLOG TRUE)
+  endif()
+endif()
+# 
+if ((${SPY_PACKAGED_BUILD}) OR (${INSTALL_PLOG}))
+  include(install/install-plog)
+  install_plog()
+  include_plog()
+endif()
+
+##########################################################################
 ## openssl
 
 if (NOT ${SPY_PACKAGED_BUILD})
