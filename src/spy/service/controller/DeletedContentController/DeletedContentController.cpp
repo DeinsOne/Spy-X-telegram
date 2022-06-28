@@ -52,7 +52,7 @@ void spy::service::controller::DeletedContentController::onUpdateDeleteMessages(
     }
 
     // Write messages modification to db
-    messagesDb->AddDeletedModifications(update.message_ids_, update.chat_id_);
+    messagesDb->AddDeletedModifications(update.message_ids_, (int)update.chat_id_);
 }
 
 void spy::service::controller::DeletedContentController::onUpdateMessageContent(td::td_api::updateMessageContent& update, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {

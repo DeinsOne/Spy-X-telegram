@@ -43,6 +43,9 @@ void spy::service::controller::NewContentController::RegisterUpdates(const std::
     handler->SetCallback<td::td_api::updateFile>(false, [&](td::td_api::updateFile& update) {
         onUpdateFile(update, handler);
     });
+    handler->SetCallback<td::td_api::updateChatLastMessage>(false, [&](td::td_api::updateChatLastMessage& update) {
+        onUpdateChatLastMessage(update, handler);
+    });
 }
 
 void spy::service::controller::NewContentController::onUpdateNewMessage(td::td_api::updateNewMessage& update, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
@@ -127,6 +130,15 @@ void spy::service::controller::NewContentController::onUpdateFile(td::td_api::up
     }
 
     messagesDb->AddFile(update.file_->remote_->unique_id_, newpath, size);
+}
+
+void spy::service::controller::NewContentController::onUpdateChatLastMessage(td::td_api::updateChatLastMessage& update, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
+    if (!initialized) return;
+
+    // Skip if message is empty
+    if (!update.last_message_) return;
+
+    chatsDb->SetChatLastMessage((int)update.chat_id_, (int)update.last_message_->id_);
 }
 
 

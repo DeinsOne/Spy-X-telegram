@@ -43,9 +43,6 @@ void spy::service::controller::ChatsController::RegisterUpdates(const std::share
     handler->SetCallback<td::td_api::updateNewChat>(false, [&](td::td_api::updateNewChat& update) {
         InsertChat(*update.chat_);
     });
-    handler->SetCallback<td::td_api::updateChatLastMessage>(false, [&](td::td_api::updateChatLastMessage& update) {
-        chatsDb->SetChatLastMessage(update.chat_id_, update.last_message_->id_);        
-    });
 }
 
 

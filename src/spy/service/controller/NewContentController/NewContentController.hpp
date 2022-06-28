@@ -5,6 +5,7 @@
 #include <spy/service/controller/BaseController.hpp>
 #include <oatpp/core/macro/component.hpp>
 #include <spy/db/MessagesDatabase/MessagesDatabase.hpp>
+#include <spy/db/ChatsDatabase/ChatsDatabase.hpp>
 
 namespace spy { namespace service { namespace controller {
 
@@ -23,8 +24,10 @@ namespace spy { namespace service { namespace controller {
     private:
         void onUpdateNewMessage(td::td_api::updateNewMessage& update, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
         void onUpdateFile(td::td_api::updateFile& update, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
+        void onUpdateChatLastMessage(td::td_api::updateChatLastMessage& update, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
 
         OATPP_COMPONENT(std::shared_ptr<db::MessagesDatabase>, messagesDb);
+        OATPP_COMPONENT(std::shared_ptr<db::ChatsDatabase>, chatsDb);
 
     private:
         void initiateFileDonwloading(td::td_api::MessageContent& content, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
