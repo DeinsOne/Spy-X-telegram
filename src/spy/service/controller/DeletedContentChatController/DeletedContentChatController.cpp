@@ -154,7 +154,7 @@ void spy::service::controller::DeletedContentChatController::CreateDeletedConten
     auto setPhotoPromise = handler->Execute<td::td_api::setChatPhoto>(
         deletedContentSupergroupChatId,
         td::td_api::make_object<td::td_api::inputChatPhotoStatic>(
-            td::td_api::make_object<td::td_api::inputFileLocal>("resources/bucket-icon.png")
+            td::td_api::make_object<td::td_api::inputFileLocal>("resources/spy-icon.png")
         )
     );
 
