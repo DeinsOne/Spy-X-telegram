@@ -82,13 +82,13 @@ void spy::service::controller::ChatsController::InsertChat(td::td_api::chat& ori
     ));
 
     auto chatDto = dto::Chat::createShared();
-    chatDto->id = origin.id_;
+    chatDto->id = (int)origin.id_;
     chatDto->title = origin.title_;
     chatDto->fetchSince = StringTools::currentDatTime();
     chatDto->fetched = chatDto->fetchSince;
 
     if (origin.last_message_) {
-        chatDto->lastMessageId = origin.last_message_->id_;
+        chatDto->lastMessageId = (int)origin.last_message_->id_;
     }
 
     // Try to add chat to chats database
