@@ -8,6 +8,7 @@
 #include <spy/service/controller/DeletedContentChatController/Command/SetExcludeChannelsCommand/SetExcludeChannelsCommand.hpp>
 #include <spy/service/controller/DeletedContentChatController/Command/SaveDeletedCommand/SaveDeletedCommand.hpp>
 #include <spy/service/controller/DeletedContentChatController/Command/SaveSecretCommand/SaveSecretCommand.hpp>
+#include <spy/service/controller/DeletedContentChatController/Command/SaveSizeCommand/SaveSizeCommand.hpp>
 
 
 std::string spy::service::controller::command::getCommandName(const std::string& commandLine) {
@@ -28,7 +29,8 @@ std::shared_ptr<spy::service::controller::command::ICommand> spy::service::contr
         { "/setchatgrouptype", spy::service::controller::command::SetChatGroupTypeCommand::ID },
         { "/setexcludechannels", spy::service::controller::command::SetExcludeChannelsCommand::ID },
         { "/savedeleted", spy::service::controller::command::SaveDeletedCommand::ID },
-        { "/savesecret", spy::service::controller::command::SaveSecretCommand::ID }
+        { "/savesecret", spy::service::controller::command::SaveSecretCommand::ID },
+        { "/savesize", spy::service::controller::command::SaveSizeCommand::ID }
         // TODO: add new name-class binding here
     };
 
@@ -53,6 +55,9 @@ std::shared_ptr<spy::service::controller::command::ICommand> spy::service::contr
         }
         case (spy::service::controller::command::SaveSecretCommand::ID): {
             return spy::service::controller::command::SaveSecretCommand::makeCommand(tdHandler, controllerHandler);
+        }
+        case (spy::service::controller::command::SaveSizeCommand::ID): {
+            return spy::service::controller::command::SaveSizeCommand::makeCommand(tdHandler, controllerHandler);
         }
         // TODO: add new name-class binding here
     }

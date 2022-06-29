@@ -53,7 +53,7 @@ void spy::service::controller::SpySettingsController::ReadSettings(const std::st
 
     // Read saveMediaSizeLimit variable
     if (!json["saveMediaSizeLimit"].empty())
-        saveMediaSizeLimit = json["saveMediaSizeLimit"].asInt();
+        saveMediaSizeLimit = json["saveMediaSizeLimit"].asFloat();
 
     // Read includeChats variable
     if (!json["includeChats"].empty())
@@ -117,7 +117,7 @@ bool spy::service::controller::SpySettingsController::GetForceExcludeChannels() 
 
 bool spy::service::controller::SpySettingsController::GetSaveDeletedMedia() { return saveDeletedMedia; }
 bool spy::service::controller::SpySettingsController::GetSaveSecretContent() { return saveSecretContent; }
-std::int32_t spy::service::controller::SpySettingsController::GetSaveMediaSizeLimit() { return saveMediaSizeLimit; }
+float spy::service::controller::SpySettingsController::GetSaveMediaSizeLimit() { return saveMediaSizeLimit; }
 
 // Setters
 void spy::service::controller::SpySettingsController::SetChatsGroupType(const spy::service::controller::ChatsGroupType& type) {
@@ -145,7 +145,7 @@ void spy::service::controller::SpySettingsController::SetSaveSecretContent(const
     saveSecretContent = save;
     WriteSettings("spy-settings.json");
 }
-void spy::service::controller::SpySettingsController::SetSaveMediaSizeLimit(const std::int32_t& size) {
+void spy::service::controller::SpySettingsController::SetSaveMediaSizeLimit(const float& size) {
     saveMediaSizeLimit = size;
     WriteSettings("spy-settings.json");
 }

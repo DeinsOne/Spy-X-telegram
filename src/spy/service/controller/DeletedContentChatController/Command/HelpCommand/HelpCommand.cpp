@@ -28,6 +28,7 @@ void spy::service::controller::command::HelpCommand::Process(const std::string& 
     " - `/setexcludechannels`\n" \
     " - `/savedeleted`\n" \
     " - `/savesecret`\n" \
+    " - `/savesize`\n" \
     " - `/cancel`\n" \
     " - `/help`";
 
