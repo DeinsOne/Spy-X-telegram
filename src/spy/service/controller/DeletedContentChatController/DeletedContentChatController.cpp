@@ -152,6 +152,22 @@ void spy::service::controller::DeletedContentChatController::CreateDeletedConten
         )
     );
 
+    // Send sticker from brand 'Spy X telegram' sticker set
+    handler->Execute<td::td_api::sendMessage>(
+        deletedContentSupergroupChatId,
+        0,
+        0,
+        td::td_api::make_object<td::td_api::messageSendOptions>(false, true, false, nullptr),
+        nullptr,
+        td::td_api::make_object<td::td_api::inputMessageSticker>(
+            td::td_api::make_object<td::td_api::inputFileRemote>("CAACAgIAAx0EXAlmkQADTGK9_8JzIn9-W-hN0nJXcUQfuyT1AALZGQACh_3pSbnBN_krgju0KQQ"),
+            nullptr,
+            512,
+            512,
+            "👀"
+        )
+    );
+
     // Send help info
     auto helpCommand = command::HelpCommand::makeCommand(handler, this->service);
     helpCommand->Process("/help");
