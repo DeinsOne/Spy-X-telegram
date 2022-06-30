@@ -30,8 +30,8 @@ namespace spy { namespace service { namespace controller {
             auto controller = std::make_shared<TController>(args...);
             controller->SetSpyService(this_);
             controller->RegisterUpdates(tdlppHandler);
-            controller->Initialize(tdlppHandler);
             controllers.insert({TController::ID, controller});
+            controller->Initialize(tdlppHandler);
         }
 
         template<typename TController>
