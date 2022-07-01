@@ -101,7 +101,7 @@ void spy::db::MessagesDatabase::addMessageContent(const std::int64_t& message_id
             );
 
             if (!result->isSuccess()) {
-                OATPP_LOGE("MessagesDatabase", "addMessageContent(messageText): %s", result->getErrorMessage()->c_str());
+                SPY_LOGE("MessagesDatabase:addMessageContent(messageText): %s", result->getErrorMessage()->c_str());
             }
         },
         [&](td::td_api::messagePhoto& message) {
@@ -124,7 +124,7 @@ void spy::db::MessagesDatabase::addMessageContent(const std::int64_t& message_id
             );
 
             if (!result->isSuccess()) {
-                OATPP_LOGE("MessagesDatabase", "addMessageContent(messagePhoto): %s", result->getErrorMessage()->c_str());
+                SPY_LOGE("MessagesDatabase:addMessageContent(messagePhoto): %s", result->getErrorMessage()->c_str());
             }
         },
         [&](td::td_api::messageVideo& message) {
@@ -149,7 +149,7 @@ void spy::db::MessagesDatabase::addMessageContent(const std::int64_t& message_id
             );
 
             if (!result->isSuccess()) {
-                OATPP_LOGE("MessagesDatabase", "addMessageContent(messageVideo): %s", result->getErrorMessage()->c_str());
+                SPY_LOGE("MessagesDatabase:addMessageContent(messageVideo): %s", result->getErrorMessage()->c_str());
             }
         },
         [&](td::td_api::messageVoiceNote& message) {
@@ -171,7 +171,7 @@ void spy::db::MessagesDatabase::addMessageContent(const std::int64_t& message_id
             );
 
             if (!result->isSuccess()) {
-                OATPP_LOGE("MessagesDatabase", "addMessageContent(messageVoiceNote): %s", result->getErrorMessage()->c_str());
+                SPY_LOGE("MessagesDatabase:addMessageContent(messageVoiceNote): %s", result->getErrorMessage()->c_str());
             }
         },
         [&](td::td_api::messageVideoNote& message) {
@@ -191,7 +191,7 @@ void spy::db::MessagesDatabase::addMessageContent(const std::int64_t& message_id
             );
 
             if (!result->isSuccess()) {
-                OATPP_LOGE("MessagesDatabase", "addMessageContent(messageVideoNote): %s", result->getErrorMessage()->c_str());
+                SPY_LOGE("MessagesDatabase", "addMessageContent(messageVideoNote): %s", result->getErrorMessage()->c_str());
             }
         },
         [&](td::td_api::messageDocument& message) {
@@ -212,7 +212,7 @@ void spy::db::MessagesDatabase::addMessageContent(const std::int64_t& message_id
             );
 
             if (!result->isSuccess()) {
-                OATPP_LOGE("MessagesDatabase", "addMessageContent(messageVoiceNote): %s", result->getErrorMessage()->c_str());
+                SPY_LOGE("MessagesDatabase", "addMessageContent(messageVoiceNote): %s", result->getErrorMessage()->c_str());
             }
         },
         [&](auto&) {}
@@ -286,7 +286,7 @@ void spy::db::MessagesDatabase::AddFile(const std::string& id, const std::string
     );
 
     if (!result->isSuccess()) {
-        OATPP_LOGE("MessagesDatabase", "AddFile: %s", result->getErrorMessage()->c_str());
+        SPY_LOGE("MessagesDatabase", "AddFile: %s", result->getErrorMessage()->c_str());
     }
 
     // Commit transaction to database

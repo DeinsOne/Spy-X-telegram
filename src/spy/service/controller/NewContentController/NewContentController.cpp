@@ -100,8 +100,6 @@ void spy::service::controller::NewContentController::onUpdateNewMessage(td::td_a
 void spy::service::controller::NewContentController::onUpdateFile(td::td_api::updateFile& update, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
     if (!update.file_->local_->is_downloading_completed_) return;
 
-    // OATPP_LOGI("NewContentController", "onUpdateFile: File downloaded");
-
     // Copy file to local directory
     auto filename = fs::path(update.file_->local_->path_).filename();
     auto newpath = SPY_DATA_FOLDER / fs::path(StringTools::toLower(filename.extension().string().substr(1))) / filename;

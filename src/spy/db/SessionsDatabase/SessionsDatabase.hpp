@@ -6,6 +6,7 @@
 #include <oatpp/core/Types.hpp>
 
 #include <oatpp-sqlite/orm.hpp>
+#include <spy/utils/Logger/SpyLog.h>
 
 #include OATPP_CODEGEN_BEGIN(DbClient)      //<- Begin Codegen
 
@@ -22,7 +23,7 @@ namespace spy { namespace db {
                 migration.migrate();
             }
             catch (std::exception& err) {
-                OATPP_LOGE("Migration failed", "SessionsDatabase: %s", err.what())
+                SPY_LOGE("SessionsDatabase:SessionsDatabase Migration failed -> %s", err.what());
             }
         }
 

@@ -11,6 +11,8 @@
 #include <spy/utils/StringTools.h>
 #include <spy/dto/Chat.hpp>
 
+#include <spy/utils/Logger/SpyLog.h>
+
 #include OATPP_CODEGEN_BEGIN(DbClient)      //<- Begin Codegen
 
 namespace spy { namespace db {
@@ -25,7 +27,7 @@ namespace spy { namespace db {
                 migration.migrate();
             }
             catch (std::exception& err) {
-                OATPP_LOGE("Migration failed", "ChatsDatabase: %s", err.what())
+                SPY_LOGE("ChatsDatabase:ChatsDatabase Migration failed -> %s", err.what());
             }
         }
 
