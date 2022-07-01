@@ -8,7 +8,7 @@
 #include <spy/service/controller/ControllersHandler.hpp>
 #include <algorithm>
 
-#include <spy/service/functions/DownloadFile/DownloadFile.hpp>
+#include <spy/service/contentWorker/ContentWorker.hpp>
 #include <spy/utils/Logger/SpyLog.h>
 
 void spy::service::controller::DeletedContentController::Initialize(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
@@ -88,39 +88,40 @@ void spy::service::controller::DeletedContentController::onUpdateMessageContent(
     }
 
     // Download file if any is attached
-    initiateFileDonwloading(*update.new_content_, handler);
+    auto worker = std::make_shared<service::content::ContentWorkerFactory>(*update.new_content_, (int)update.message_id_, (int)update.chat_id_);
+    worker->DownloadContent(*update.new_content_, this->service, handler);
 
     // Write message modification to bd
     messagesDb->AddMessageModification((int)update.message_id_, (int)update.chat_id_, *update.new_content_);
 }
 
 
-void spy::service::controller::DeletedContentController::initiateFileDonwloading(td::td_api::MessageContent& content, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
-    td::td_api::downcast_call(content, tdlpp::overloaded(
-        [&](td::td_api::messagePhoto& message) {
-            auto priority = message.is_secret_ ? 1 : 5;
-            spy::service::functions::DownloadFile download(this->service, handler, *message.photo_->sizes_.back()->photo_, priority);
-            download.Execute();
-        },
-        [&](td::td_api::messageVideo& message) {
-            auto priority = message.is_secret_ ? 1 : 20;
-            spy::service::functions::DownloadFile download(this->service, handler, *message.video_->video_, priority);
-            download.Execute();
-        },
-        [&](td::td_api::messageVoiceNote& message) {
-            spy::service::functions::DownloadFile download(this->service, handler, *message.voice_note_->voice_, 10);
-            download.Execute();
-        },
-        [&](td::td_api::messageVideoNote& message) {
-            auto priority = message.is_secret_ ? 1 : 4;
-            spy::service::functions::DownloadFile download(this->service, handler, *message.video_note_->video_, 10);
-            download.Execute();
-        },
-        [&](td::td_api::messageDocument& message) {
-            spy::service::functions::DownloadFile download(this->service, handler, *message.document_->document_, 10);
-            download.Execute();
-        },
-        [&](auto&) {}
-    ));
-}
+// void spy::service::controller::DeletedContentController::initiateFileDonwloading(td::td_api::MessageContent& content, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
+    // td::td_api::downcast_call(content, tdlpp::overloaded(
+        // [&](td::td_api::messagePhoto& message) {
+        //     auto priority = message.is_secret_ ? 1 : 5;
+        //     spy::service::functions::DownloadFile download(this->service, handler, *message.photo_->sizes_.back()->photo_, priority);
+        //     download.Execute();
+        // },
+    //     [&](td::td_api::messageVideo& message) {
+    //         auto priority = message.is_secret_ ? 1 : 20;
+    //         spy::service::functions::DownloadFile download(this->service, handler, *message.video_->video_, priority);
+    //         download.Execute();
+    //     },
+    //     [&](td::td_api::messageVoiceNote& message) {
+    //         spy::service::functions::DownloadFile download(this->service, handler, *message.voice_note_->voice_, 10);
+    //         download.Execute();
+    //     },
+    //     [&](td::td_api::messageVideoNote& message) {
+    //         auto priority = message.is_secret_ ? 1 : 4;
+    //         spy::service::functions::DownloadFile download(this->service, handler, *message.video_note_->video_, 10);
+    //         download.Execute();
+    //     },
+    //     [&](td::td_api::messageDocument& message) {
+    //         spy::service::functions::DownloadFile download(this->service, handler, *message.document_->document_, 10);
+    //         download.Execute();
+    //     },
+    //     [&](auto&) {}
+    // ));
+// }
 

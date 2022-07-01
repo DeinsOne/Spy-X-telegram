@@ -7,6 +7,8 @@
 
 #include <spy/service/functions/Utils/FormattedTextToMarkdown.hpp>
 
+#include <spy/service/contentWorker/ContentWorker.hpp>
+
 void spy::db::MessagesDatabase::addBaseMessage(td::td_api::message& message) {
     // Declare raw parameters
     std::unordered_map<oatpp::String, oatpp::Void> params;
@@ -84,139 +86,10 @@ void spy::db::MessagesDatabase::addDeletedModification(const std::int64_t& messa
 }
 
 void spy::db::MessagesDatabase::addMessageContent(const std::int64_t& message_id, const std::int64_t& chat_id, const std::int32_t& version, td::td_api::MessageContent& content) {
+    auto worker = std::make_shared<service::content::ContentWorkerFactory>(content, message_id, chat_id);
+
     // Declare message's content in database
-    td::td_api::downcast_call(content, tdlpp::overloaded(
-        [&](td::td_api::messageText& message) {
-            spy::service::functions::FormattedTextToMarkdown parser(*message.text_);
-            parser.Execute();
-
-            auto result = executeQuery("INSERT INTO messageText (id, chat_id, version_, text_) VALUES " \
-                "(:id, :chat_id, :version, :text);",
-                {
-                    { "id", oatpp::Int64(message_id) },
-                    { "chat_id", oatpp::Int64(chat_id) },
-                    { "version", oatpp::Int64(version) },
-                    { "text", oatpp::String(parser.GetMarkdown()) }
-                }
-            );
-
-            if (!result->isSuccess()) {
-                SPY_LOGE("MessagesDatabase:addMessageContent(messageText): %s", result->getErrorMessage()->c_str());
-            }
-        },
-        [&](td::td_api::messagePhoto& message) {
-            spy::service::functions::FormattedTextToMarkdown parser(*message.caption_);
-            parser.Execute();
-
-            auto result = executeQuery(
-                "INSERT INTO messagePhoto (id, chat_id, version_, caption_, is_secret_, file_id_, width, height) VALUES " \
-                "(:id, :chat_id, :version, :caption, :secret, :file_id, :w, :h);",
-                {
-                    { "id", oatpp::Int64(message_id) },
-                    { "chat_id", oatpp::Int64(chat_id) },
-                    { "version", oatpp::Int64(version) },
-                    { "caption", oatpp::String(parser.GetMarkdown()) },
-                    { "secret", oatpp::Boolean(message.is_secret_) },
-                    { "file_id", oatpp::String(message.photo_->sizes_.back()->photo_->remote_->unique_id_) },
-                    { "w", oatpp::Int32((int)message.photo_->sizes_.back()->width_) },
-                    { "h", oatpp::Int32((int)message.photo_->sizes_.back()->height_) }
-                }
-            );
-
-            if (!result->isSuccess()) {
-                SPY_LOGE("MessagesDatabase:addMessageContent(messagePhoto): %s", result->getErrorMessage()->c_str());
-            }
-        },
-        [&](td::td_api::messageVideo& message) {
-            spy::service::functions::FormattedTextToMarkdown parser(*message.caption_);
-            parser.Execute();
-
-            auto result = executeQuery(
-                "INSERT INTO messageVideo (id, chat_id, version_, caption_, is_secret_, file_id_, duration, width, height, mime_type) VALUES " \
-                "(:id, :chat_id, :version, :caption, :secret, :file_id, :d, :w, :h, :mime);",
-                {
-                    { "id", oatpp::Int64(message_id) },
-                    { "chat_id", oatpp::Int64(chat_id) },
-                    { "version", oatpp::Int64(version) },
-                    { "caption", oatpp::String(parser.GetMarkdown()) },
-                    { "secret", oatpp::Boolean(message.is_secret_) },
-                    { "file_id", oatpp::String(message.video_->video_->remote_->unique_id_) },
-                    { "d", oatpp::Int32((int)message.video_->duration_) },
-                    { "w", oatpp::Int32((int)message.video_->width_) },
-                    { "h", oatpp::Int32((int)message.video_->height_) },
-                    { "mime", oatpp::String(message.video_->mime_type_) }
-                }
-            );
-
-            if (!result->isSuccess()) {
-                SPY_LOGE("MessagesDatabase:addMessageContent(messageVideo): %s", result->getErrorMessage()->c_str());
-            }
-        },
-        [&](td::td_api::messageVoiceNote& message) {
-            spy::service::functions::FormattedTextToMarkdown parser(*message.caption_);
-            parser.Execute();
-
-            auto result = executeQuery(
-                "INSERT INTO messageVoiceNote (id, chat_id, version_, is_listened, file_id_, duration, mime_type) VALUES " \
-                "(:id, :chat_id, :version, :listened, :file_id, :d, :mime);",
-                {
-                    { "id", oatpp::Int64(message_id) },
-                    { "chat_id", oatpp::Int64(chat_id) },
-                    { "version", oatpp::Int64(version) },
-                    { "listened", oatpp::Boolean(message.is_listened_) },
-                    { "file_id", oatpp::String(message.voice_note_->voice_->remote_->unique_id_) },
-                    { "d", oatpp::Int32((int)message.voice_note_->duration_) },
-                    { "mime", oatpp::String(message.voice_note_->mime_type_) }
-                }
-            );
-
-            if (!result->isSuccess()) {
-                SPY_LOGE("MessagesDatabase:addMessageContent(messageVoiceNote): %s", result->getErrorMessage()->c_str());
-            }
-        },
-        [&](td::td_api::messageVideoNote& message) {
-            auto result = executeQuery(
-                "INSERT INTO messageVideoNote (id, chat_id, version_, is_secret_, is_viewed, file_id_, duration, length) VALUES " \
-                "(:id, :chat_id, :version, :secret, :viewed, :file_id, :d, :l);",
-                {
-                    { "id", oatpp::Int64(message_id) },
-                    { "chat_id", oatpp::Int64(chat_id) },
-                    { "version", oatpp::Int64(version) },
-                    { "secret", oatpp::Boolean(message.is_secret_) },
-                    { "viewed", oatpp::Boolean(message.is_viewed_) },
-                    { "file_id", oatpp::String(message.video_note_->video_->remote_->unique_id_) },
-                    { "d", oatpp::Int32((int)message.video_note_->duration_) },
-                    { "l", oatpp::Int32((int)message.video_note_->length_) }
-                }
-            );
-
-            if (!result->isSuccess()) {
-                SPY_LOGE("MessagesDatabase", "addMessageContent(messageVideoNote): %s", result->getErrorMessage()->c_str());
-            }
-        },
-        [&](td::td_api::messageDocument& message) {
-            spy::service::functions::FormattedTextToMarkdown parser(*message.caption_);
-            parser.Execute();
-
-            auto result = executeQuery(
-                "INSERT INTO messageDocument (id, chat_id, version_, caption, file_id_, mime_type) VALUES " \
-                "(:id, :chat_id, :version, :caption, :file_id, :mime);",
-                {
-                    { "id", oatpp::Int64(message_id) },
-                    { "chat_id", oatpp::Int64(chat_id) },
-                    { "version", oatpp::Int64(version) },
-                    { "caption", oatpp::String(parser.GetMarkdown()) },
-                    { "file_id", oatpp::String(message.document_->document_->remote_->unique_id_) },
-                    { "mime", oatpp::String(message.document_->mime_type_) }
-                }
-            );
-
-            if (!result->isSuccess()) {
-                SPY_LOGE("MessagesDatabase", "addMessageContent(messageVoiceNote): %s", result->getErrorMessage()->c_str());
-            }
-        },
-        [&](auto&) {}
-    ));
+    worker->AddToDatabase(content, version);
 }
 
 
@@ -286,7 +159,7 @@ void spy::db::MessagesDatabase::AddFile(const std::string& id, const std::string
     );
 
     if (!result->isSuccess()) {
-        SPY_LOGE("MessagesDatabase", "AddFile: %s", result->getErrorMessage()->c_str());
+        SPY_LOGE("MessagesDatabase:AddFile: %s", result->getErrorMessage()->c_str());
     }
 
     // Commit transaction to database

@@ -7,10 +7,11 @@
 #include <spy/service/controller/ControllersHandler.hpp>
 #include <algorithm>
 
-#include <spy/service/functions/DownloadFile/DownloadFile.hpp>
+#include <spy/service/contentWorker/ContentWorker.hpp>
 #include <spy/utils/StringTools.h>
 
 #include <spy/utils/Logger/SpyLog.h>
+#include <IdNameBinding.hpp>
 
 #if defined(WIN32) || defined(_WIN32)
     #include <filesystem>
@@ -80,18 +81,11 @@ void spy::service::controller::NewContentController::onUpdateNewMessage(td::td_a
     }
 
     // Process message
-    td::td_api::downcast_call(*update.message_->sender_id_, tdlpp::overloaded(
-        [&](td::td_api::messageSenderChat& sender) {
-            SPY_LOGI("NewContentController:onUpdateNewMessage -> chat %d from chat %d", update.message_->chat_id_, sender.chat_id_);
-        },
-        [&](td::td_api::messageSenderUser& sender) {
-            SPY_LOGI("NewContentController:onUpdateNewMessage -> chat %d from user %d", update.message_->chat_id_, sender.user_id_);
-        },
-        [](auto&) {}
-    ));
+    SPY_LOGD("NewContentController:onUpdateNewMessage -> %s id: %ld", TDLPP_TD_ID_NAME(update.message_->content_->get_id()), update.message_->id_);
 
     // Download file if any is attached
-    initiateFileDonwloading(*update.message_->content_, handler);
+    auto worker = std::make_shared<service::content::ContentWorkerFactory>(*update.message_->content_, (int)update.message_->id_, (int)update.message_->chat_id_);
+    worker->DownloadContent(*update.message_->content_, this->service, handler);
 
     // Write message to database
     messagesDb->AddMessage(*update.message_);
@@ -144,34 +138,3 @@ void spy::service::controller::NewContentController::onUpdateChatLastMessage(td:
 
     chatsDb->SetChatLastMessage((int)update.chat_id_, (int)update.last_message_->id_);
 }
-
-
-void spy::service::controller::NewContentController::initiateFileDonwloading(td::td_api::MessageContent& content, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
-    td::td_api::downcast_call(content, tdlpp::overloaded(
-        [&](td::td_api::messagePhoto& message) {
-            auto priority = message.is_secret_ ? 1 : 5;
-            spy::service::functions::DownloadFile download(this->service, handler, *message.photo_->sizes_.back()->photo_, priority);
-            download.Execute();
-        },
-        [&](td::td_api::messageVideo& message) {
-            auto priority = message.is_secret_ ? 1 : 20;
-            spy::service::functions::DownloadFile download(this->service, handler, *message.video_->video_, priority);
-            download.Execute();
-        },
-        [&](td::td_api::messageVoiceNote& message) {
-            spy::service::functions::DownloadFile download(this->service, handler, *message.voice_note_->voice_, 10);
-            download.Execute();
-        },
-        [&](td::td_api::messageVideoNote& message) {
-            auto priority = message.is_secret_ ? 1 : 4;
-            spy::service::functions::DownloadFile download(this->service, handler, *message.video_note_->video_, 10);
-            download.Execute();
-        },
-        [&](td::td_api::messageDocument& message) {
-            spy::service::functions::DownloadFile download(this->service, handler, *message.document_->document_, 10);
-            download.Execute();
-        },
-        [&](auto&) {}
-    ));
-}
-

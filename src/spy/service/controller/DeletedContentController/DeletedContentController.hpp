@@ -26,8 +26,8 @@ namespace spy { namespace service { namespace controller {
 
         OATPP_COMPONENT(std::shared_ptr<db::MessagesDatabase>, messagesDb);
 
-    private:
-        void initiateFileDonwloading(td::td_api::MessageContent& content, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
+    // private:
+        // void initiateFileDonwloading(td::td_api::MessageContent& content, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
 
     };
 

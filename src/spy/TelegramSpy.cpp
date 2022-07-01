@@ -45,6 +45,7 @@ int main(int argc, char** argv) {
 
     /* Waiting for user to be logged in */
     if (!spyAuth->IsAuthorized()) {
+        SPY_LOGD("Tdlpp:WaitAuthorized");
         spyAuth->WaitAuthorized();
 
         if (spyAuth->GetRetriesCount() >= TDLPP_MAX_AUTH_RETRIES) {
