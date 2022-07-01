@@ -10,6 +10,8 @@
 #include <spy/service/functions/DownloadFile/DownloadFile.hpp>
 #include <spy/utils/StringTools.h>
 
+#include <spy/utils/Logger/SpyLog.h>
+
 #if defined(WIN32) || defined(_WIN32)
     #include <filesystem>
     namespace fs = std::filesystem;
@@ -19,6 +21,8 @@
 #endif
 
 void spy::service::controller::NewContentController::Initialize(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
+    SPY_LOGD("NewContentController:Initialize");
+
     auto mePromise = handler->Execute<td::td_api::getMe>();
     auto me = tdlpp::cast_object<td::td_api::user>(mePromise->GetResponse());
 
@@ -34,9 +38,11 @@ void spy::service::controller::NewContentController::Initialize(const std::share
     }
 
     initialized = true;
+    SPY_LOGD("NewContentController:Initialize Finished");
 }
 
 void spy::service::controller::NewContentController::RegisterUpdates(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
+    SPY_LOGD("NewContentController:RegisterUpdates");
     handler->SetCallback<td::td_api::updateNewMessage>(false, [&](td::td_api::updateNewMessage& update) {
         onUpdateNewMessage(update, handler);
     });
@@ -76,10 +82,10 @@ void spy::service::controller::NewContentController::onUpdateNewMessage(td::td_a
     // Process message
     td::td_api::downcast_call(*update.message_->sender_id_, tdlpp::overloaded(
         [&](td::td_api::messageSenderChat& sender) {
-            OATPP_LOGD("NewContentController", "New message in chat %d from chat %d", update.message_->chat_id_, sender.chat_id_);
+            SPY_LOGI("NewContentController:onUpdateNewMessage -> chat %d from chat %d", update.message_->chat_id_, sender.chat_id_);
         },
         [&](td::td_api::messageSenderUser& sender) {
-            OATPP_LOGD("NewContentController", "New message in chat %d from user %d", update.message_->chat_id_, sender.user_id_);
+            SPY_LOGI("NewContentController:onUpdateNewMessage -> chat %d from user %d", update.message_->chat_id_, sender.user_id_);
         },
         [](auto&) {}
     ));
