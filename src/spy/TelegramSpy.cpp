@@ -14,6 +14,8 @@
 #include <spy/controller/StaticController.hpp>
 #include <spy/controller/ChatsController/ChatsController.hpp>
 
+#include <spy/utils/Logger/SpyLog.h>
+
 #if !defined(WIN32) && !defined(_WIN32)
     #include <experimental/filesystem>
     namespace fs = std::experimental::filesystem;
@@ -25,6 +27,8 @@
 int main(int argc, char** argv) {
     /* Parse command line arguments */
     spy::utils::CmdParserSingleton::Get()->ParseArguments(argc, argv);
+
+    SPY_LOG_INIT()
 
     /* Initializing oatpp environment */
     oatpp::base::Environment::init();
@@ -71,7 +75,7 @@ int main(int argc, char** argv) {
         OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 
         /* Add endpoints */
-        // router->addController(spy::controller::StaticController::createShared());
+        router->addController(spy::controller::StaticController::createShared());
         router->addController(spy::controller::ChatsController::createShared());
 
         /* Initialize server */
@@ -85,9 +89,8 @@ int main(int argc, char** argv) {
 
         /* Print some info */
         printf("\n\n");
-        OATPP_LOGI("Rest server", "Running on http://localhost:%d/", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
-        OATPP_LOGI("Rest server", "Endpoints on http://localhost:%d/swegger/ui", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
-        printf("\n");
+        SPY_LOGI("Rest server:Running on http://localhost:%d", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
+        SPY_LOGI("Rest server:Endpoints on http://localhost:%d/swegger/ui\n", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
 
         /* Start rest server */
         server.run();

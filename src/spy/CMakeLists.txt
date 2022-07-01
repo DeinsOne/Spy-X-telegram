@@ -15,6 +15,7 @@ add_executable(tgspy
   service/functions/DownloadFile/DownloadFile.cpp
   service/functions/SendMessage/SendMessage.cpp
   utils/StringTools.cpp
+  utils/Logger/Logger.cpp
   controller/ErrorHandler.cpp
   service/controller/ChatsController/ChatsController.cpp
   service/controller/SettingsController/SpySettingsController.cpp

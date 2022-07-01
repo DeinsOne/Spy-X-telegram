@@ -70,6 +70,7 @@ allow external app to use telegram features
             options->add_options()
                 ("p,port",      "Rest client port",                     cxxopts::value<int>()->default_value("8089"))
                 ("r,rest",      "Enable rest client",                   cxxopts::value<bool>()->default_value("true"))
+                ("log_level",   "Enable logging",                       cxxopts::value<std::string>()->default_value("info"))
                 ("h,help",      "Telegram spy help information")
                 ("v,version",   "Telegram spy version info");
         }
