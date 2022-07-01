@@ -20,6 +20,8 @@ namespace spy { namespace db {
     class ChatsDatabase : public oatpp::orm::DbClient {
     public:
         ChatsDatabase(const std::shared_ptr<oatpp::orm::Executor>& executor) : oatpp::orm::DbClient(executor) {
+            SPY_LOGD("ChatsDatabase:constructor");
+
             oatpp::orm::SchemaMigration migration(executor);
 
             try {

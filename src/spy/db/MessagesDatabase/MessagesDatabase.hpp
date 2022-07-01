@@ -21,6 +21,8 @@ namespace spy { namespace db {
     class MessagesDatabase : public oatpp::orm::DbClient {
     public:
         MessagesDatabase(const std::shared_ptr<oatpp::orm::Executor>& executor) : oatpp::orm::DbClient(executor) {
+            SPY_LOGD("MessagesDatabase:constructor");
+
             oatpp::orm::SchemaMigration migration(executor);
 
             try {
@@ -38,7 +40,6 @@ namespace spy { namespace db {
         void AddMessage(td::td_api::message& message);
         void AddMessageModification(const std::int64_t& message_id, const std::int64_t& chat_id, td::td_api::MessageContent& content);
 
-        // void AddDeletedModification(const std::int64_t& message_id, const std::int64_t& chat_id);
         void AddDeletedModifications(const std::vector<std::int64_t>& message_ids, const std::int64_t& chat_id);
 
         void AddFile(const std::string& id, const std::string& path, const std::size_t& size);

@@ -15,6 +15,8 @@ namespace spy { namespace db {
     class SessionsDatabase : public oatpp::orm::DbClient {
     public:
         SessionsDatabase(const std::shared_ptr<oatpp::orm::Executor>& executor) : oatpp::orm::DbClient(executor) {
+            SPY_LOGD("SessionsDatabase:constructor");
+
             oatpp::orm::SchemaMigration migration(executor);
 
             try {
