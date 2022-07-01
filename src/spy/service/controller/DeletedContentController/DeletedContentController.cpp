@@ -9,12 +9,16 @@
 #include <algorithm>
 
 #include <spy/service/functions/DownloadFile/DownloadFile.hpp>
+#include <spy/utils/Logger/SpyLog.h>
 
 void spy::service::controller::DeletedContentController::Initialize(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
+    SPY_LOGD("DeletedContentController:Initialize");
     initialized = true;
+    SPY_LOGD("DeletedContentController:Initialize Finished");
 }
 
 void spy::service::controller::DeletedContentController::RegisterUpdates(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
+    SPY_LOGD("DeletedContentController:RegisterUpdates");
     handler->SetCallback<td::td_api::updateDeleteMessages>(false, [&](td::td_api::updateDeleteMessages& update) {
         onUpdateDeleteMessages(update, handler);
     })->SetCallback<td::td_api::updateMessageContent>(false, [&](td::td_api::updateMessageContent& update) {
