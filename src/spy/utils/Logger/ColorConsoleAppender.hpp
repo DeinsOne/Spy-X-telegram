@@ -111,7 +111,7 @@ namespace plog {
 
                 case debug:
                 case verbose:
-                    this->m_outputStream << "\x1B[;36m"; // cyan
+                    this->m_outputStream << "\x1B[;34m"; // cyan
                     break;
 #endif
                 default:

@@ -10,9 +10,10 @@
 #include <spy/service/controller/DeletedContentChatController/Command/CommandHandler.hpp>
 #include <spy/service/controller/DeletedContentChatController/Command/HelpCommand/HelpCommand.hpp>
 
+#include <spy/utils/Logger/SpyLog.h>
 
 void spy::service::controller::DeletedContentChatController::Initialize(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
-    OATPP_LOGD("DeletedContentChatController", "Initialize");
+    SPY_LOGD("DeletedContentChatController:Initialize");
 
     auto chatsController = this->service->GetController<spy::service::controller::ChatsController>();
     auto supergroups = chatsController->GetSupergroupChats();
@@ -22,30 +23,22 @@ void spy::service::controller::DeletedContentChatController::Initialize(const st
 
     // Create new deleted content chat
     if (deletedContentSupergroupChatId == 0 ) {
-        OATPP_LOGD("DeletedContentChatController", "'deleted content chat' not found. Create one..");
+        SPY_LOGI("DeletedContentChatController:Initialize 'deleted content chat' not found. Create one..");
         CreateDeletedContentChat(handler);
     }
+    else
+        SPY_LOGD("DeletedContentChatController:Initialize Found 'deleted content chat'");
 
     // Find deleted content chat's creator
     GetDeletedContentChatOwner(handler);
 
     initialized = true;
 
-
-    // Exclude deleted content chat from parsing
-    auto settings = this->service->GetController<spy::service::controller::SpySettingsController>();
-    auto excludeChats = settings->GetExcludeChats();
-
-    // Add saved messages to excluded chats if wasn't added
-    if (std::find(excludeChats.begin(), excludeChats.end(), (int)deletedContentSupergroupChatId) == excludeChats.end()) {
-        excludeChats.emplace_back((int)deletedContentSupergroupChatId);
-        settings->SetExcludeChats(excludeChats);
-    }
-
-    OATPP_LOGD("DeletedContentChatController", "Initialization finished chat: %d", deletedContentSupergroupChatId);
+    SPY_LOGD("DeletedContentChatController:Initialize Finished chat: %d", deletedContentSupergroupChatId);
 }
 
 void spy::service::controller::DeletedContentChatController::RegisterUpdates(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
+    SPY_LOGD("DeletedContentChatController:RegisterUpdates");
     handler->SetCallback<td::td_api::updateNewMessage>(false, [&](td::td_api::updateNewMessage& update) {
         onUpdateNewMessage(update, handler);
     });
@@ -86,6 +79,8 @@ void spy::service::controller::DeletedContentChatController::onUpdateNewMessage(
 }
 
 void spy::service::controller::DeletedContentChatController::FindDeletedContentChat(const std::vector<std::int64_t>& chat_ids, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
+    SPY_LOGD("DeletedContentChatController:FindDeletedContentChat");
+
     std::condition_variable condition;
     std::int64_t loadedChats = 0;
 
@@ -106,9 +101,6 @@ void spy::service::controller::DeletedContentChatController::FindDeletedContentC
                             },
                             [](auto&) { }
                         ));
-
-
-                        OATPP_LOGD("DeletedContentChatController", "Found 'deleted content chat'");
                     }
                 },
                 [](auto&) {}
@@ -127,6 +119,8 @@ void spy::service::controller::DeletedContentChatController::FindDeletedContentC
 }
 
 void spy::service::controller::DeletedContentChatController::CreateDeletedContentChat(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
+    SPY_LOGD("DeletedContentChatController:CreateDeletedContentChat");
+
     // Create supergroup
     auto supergroupPromise = handler->Execute<td::td_api::createNewSupergroupChat>(
         SPY_DELETED_CONTENT_CHAT_TITLE,
@@ -136,13 +130,27 @@ void spy::service::controller::DeletedContentChatController::CreateDeletedConten
         false
     );
 
+    // Handle error
+    if (supergroupPromise->GetResponse()->get_id() == td::td_api::error::ID) {
+        auto error = tdlpp::cast_object<td::td_api::error>(supergroupPromise->GetResponse());
+        SPY_LOGF("DeletedContentChatController:CreateDeletedContentChat td_api::createNewSupergroupChat: %s", error.message_.c_str());
+    }
+
+
     // Set group id locally
-    td::td_api::downcast_call(*supergroupPromise->GetResponse(), tdlpp::overloaded(
-        [&](td::td_api::chat& chat) {
-            deletedContentSupergroupChatId = chat.id_;
+    auto deletedContentChat = tdlpp::cast_object<td::td_api::chat>(supergroupPromise->GetResponse());
+    deletedContentSupergroupChatId = deletedContentChat.id_;
+
+    td::td_api::downcast_call(*deletedContentChat.type_, tdlpp::overloaded(
+        [&](td::td_api::chatTypeSupergroup& spg) {
+            deletedContentSupergroupId = spg.supergroup_id_;
         },
         [](auto&) { }
     ));
+
+    // Exclude chat from parsing
+    ExcludeParwingDeletedContentChat(handler);
+
 
     // Set chat photo
     auto setPhotoPromise = handler->Execute<td::td_api::setChatPhoto>(
@@ -153,7 +161,7 @@ void spy::service::controller::DeletedContentChatController::CreateDeletedConten
     );
 
     // Send sticker from brand 'Spy X telegram' sticker set
-    handler->Execute<td::td_api::sendMessage>(
+    auto sendStickerPromise = handler->Execute<td::td_api::sendMessage>(
         deletedContentSupergroupChatId,
         0,
         0,
@@ -168,13 +176,40 @@ void spy::service::controller::DeletedContentChatController::CreateDeletedConten
         )
     );
 
+    // Handle error
+    if (setPhotoPromise->GetResponse()->get_id() == td::td_api::error::ID) {
+        auto error = tdlpp::cast_object<td::td_api::error>(setPhotoPromise->GetResponse());
+        SPY_LOGE("DeletedContentChatController:CreateDeletedContentChat td_api::setChatPhoto: %s", error.message_.c_str());
+    }
+
+    // Handle error
+    if (sendStickerPromise->GetResponse()->get_id() == td::td_api::error::ID) {
+        auto error = tdlpp::cast_object<td::td_api::error>(sendStickerPromise->GetResponse());
+        SPY_LOGE("DeletedContentChatController:CreateDeletedContentChat td_api::sendMessage: %s", error.message_.c_str());
+    }
+
     // Send help info
     auto helpCommand = command::HelpCommand::makeCommand(handler, this->service);
     helpCommand->Process("/help");
 }
 
-// FIXME: Optimize with multithreading
+void spy::service::controller::DeletedContentChatController::ExcludeParwingDeletedContentChat(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
+    SPY_LOGD("DeletedContentChatController:ExcludeParwingDeletedContentChat");
+
+    // Exclude deleted content chat from parsing
+    auto settings = this->service->GetController<spy::service::controller::SpySettingsController>();
+    auto excludeChats = settings->GetExcludeChats();
+
+    // Add saved messages to excluded chats if wasn't added
+    if (std::find(excludeChats.begin(), excludeChats.end(), (int)deletedContentSupergroupChatId) == excludeChats.end()) {
+        excludeChats.emplace_back((int)deletedContentSupergroupChatId);
+        settings->SetExcludeChats(excludeChats);
+    }
+}
+
 void spy::service::controller::DeletedContentChatController::GetDeletedContentChatOwner(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
+    SPY_LOGD("DeletedContentChatController:GetDeletedContentChatOwner");
+
     // Get me to access my id
     auto mePromise = handler->Execute<td::td_api::getMe>();
     auto me = tdlpp::cast_object<td::td_api::user>(mePromise->GetResponse());
@@ -185,6 +220,11 @@ void spy::service::controller::DeletedContentChatController::GetDeletedContentCh
         std::move(td::td_api::make_object<td::td_api::supergroupMembersFilterAdministrators>()),
         0, 10
     );
+
+    if (adminsPromise->GetResponse()->get_id() == td::td_api::error::ID) {
+        auto error = tdlpp::cast_object<td::td_api::error>(adminsPromise->GetResponse());
+        SPY_LOGF("DeletedContentChatController:GetDeletedContentChatOwner td_api::getSupergroupMembers: %s", error.message_.c_str());
+    }
 
     auto admins = tdlpp::cast_object<td::td_api::chatMembers>(adminsPromise->GetResponse());
 

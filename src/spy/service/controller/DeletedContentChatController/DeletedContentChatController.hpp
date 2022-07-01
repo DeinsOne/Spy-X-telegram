@@ -5,7 +5,7 @@
 #include <spy/service/controller/BaseController.hpp>
 
 #define SPY_DELETED_CONTENT_CHAT_TITLE "Spy X telegram"
-#define SPY_DELETED_CONTENT_CHAT_DESCRIPTION "TelegramSpy is a powerful application which, at first, stores edited, deleted and secret messages. It provides rest api to allow external app to use telegram features"
+#define SPY_DELETED_CONTENT_CHAT_DESCRIPTION "Spy X telegram is a powerful application which, at first, stores edited, deleted and secret messages. It provides rest api to allow external app to use telegram features"
 
 #include <spy/service/controller/DeletedContentChatController/Command/ICommand.hpp>
 
@@ -29,6 +29,7 @@ namespace spy { namespace service { namespace controller {
         void FindDeletedContentChat(const std::vector<std::int64_t>& chat_ids, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
         void CreateDeletedContentChat(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
         void GetDeletedContentChatOwner(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
+        void ExcludeParwingDeletedContentChat(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
 
         void onUpdateNewMessage(td::td_api::updateNewMessage& update, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler);
 
