@@ -12,14 +12,24 @@ add_executable(tgspy
   auth/SpyAuth.cpp
   db/MessagesDatabase/MessagesDatabase.cpp
   service/SpyService.cpp
-  service/functions/DownloadFile.cpp
+  service/functions/DownloadFile/DownloadFile.cpp
+  service/functions/SendMessage/SendMessage.cpp
   utils/StringTools.cpp
+  utils/Logger/Logger.cpp
   controller/ErrorHandler.cpp
   service/controller/ChatsController/ChatsController.cpp
   service/controller/SettingsController/SpySettingsController.cpp
   service/controller/NewContentController/NewContentController.cpp
   service/controller/DeletedContentController/DeletedContentController.cpp
   service/controller/DeletedContentChatController/DeletedContentChatController.cpp
+  service/controller/DeletedContentChatController/Command/CommandHandler.cpp
+  service/controller/DeletedContentChatController/Command/HelpCommand/HelpCommand.cpp
+  service/controller/DeletedContentChatController/Command/SetChatGroupTypeCommand/SetChatGroupTypeCommand.cpp
+  service/controller/DeletedContentChatController/Command/SetExcludeChannelsCommand/SetExcludeChannelsCommand.cpp
+  service/controller/DeletedContentChatController/Command/SaveDeletedCommand/SaveDeletedCommand.cpp
+  service/controller/DeletedContentChatController/Command/SaveSecretCommand/SaveSecretCommand.cpp
+  service/controller/DeletedContentChatController/Command/SaveSizeCommand/SaveSizeCommand.cpp
+  service/contentWorker/ContentWorker.cpp
 )
 target_link_libraries(tgspy
   PUBLIC tdlpp

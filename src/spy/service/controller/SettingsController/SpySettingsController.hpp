@@ -31,7 +31,7 @@ namespace spy { namespace service { namespace controller {
 
         bool GetSaveDeletedMedia();
         bool GetSaveSecretContent();
-        std::int32_t GetSaveMediaSizeLimit();
+        float GetSaveMediaSizeLimit();
 
         // Setters
         void SetChatsGroupType(const ChatsGroupType& type);
@@ -41,7 +41,7 @@ namespace spy { namespace service { namespace controller {
 
         void SetSaveDeletedMedia(const bool& save);
         void SetSaveSecretContent(const bool& save);
-        void SetSaveMediaSizeLimit(const std::int32_t& size);
+        void SetSaveMediaSizeLimit(const float& size);
 
     private:
         void ReadSettings(const std::string& path);
@@ -57,7 +57,7 @@ namespace spy { namespace service { namespace controller {
 
         bool saveDeletedMedia{true};
         bool saveSecretContent{true};
-        std::int32_t saveMediaSizeLimit;
+        float saveMediaSizeLimit;
     };
 
 } } } // namespace spy { namespace service { namespace controller {

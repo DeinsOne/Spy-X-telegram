@@ -14,6 +14,9 @@
 #include <spy/controller/StaticController.hpp>
 #include <spy/controller/ChatsController/ChatsController.hpp>
 
+#include <spy/utils/Logger/SpyLog.h>
+#include <spy/version.h>
+
 #if !defined(WIN32) && !defined(_WIN32)
     #include <experimental/filesystem>
     namespace fs = std::experimental::filesystem;
@@ -25,6 +28,9 @@
 int main(int argc, char** argv) {
     /* Parse command line arguments */
     spy::utils::CmdParserSingleton::Get()->ParseArguments(argc, argv);
+
+    SPY_LOG_INIT();
+    SPY_LOGI("Spy X Telegram version " SPY_VERSION_STRING "\n");
 
     /* Initializing oatpp environment */
     oatpp::base::Environment::init();
@@ -39,6 +45,7 @@ int main(int argc, char** argv) {
 
     /* Waiting for user to be logged in */
     if (!spyAuth->IsAuthorized()) {
+        SPY_LOGD("Tdlpp:WaitAuthorized");
         spyAuth->WaitAuthorized();
 
         if (spyAuth->GetRetriesCount() >= TDLPP_MAX_AUTH_RETRIES) {
@@ -71,7 +78,7 @@ int main(int argc, char** argv) {
         OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 
         /* Add endpoints */
-        // router->addController(spy::controller::StaticController::createShared());
+        router->addController(spy::controller::StaticController::createShared());
         router->addController(spy::controller::ChatsController::createShared());
 
         /* Initialize server */
@@ -84,10 +91,9 @@ int main(int argc, char** argv) {
         );
 
         /* Print some info */
-        printf("\n\n");
-        OATPP_LOGI("Rest server", "Running on http://localhost:%d/", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
-        OATPP_LOGI("Rest server", "Endpoints on http://localhost:%d/swegger/ui", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
-        printf("\n");
+        spy::utils::CmdParserSingleton::Get()->GetArgument<std::string>("log_level") == "debug" ? printf("\n\n") : printf("\n");
+        SPY_LOGI("Rest server:Running on http://localhost:%d", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
+        SPY_LOGI("Rest server:Endpoints on http://localhost:%d/swegger/ui\n", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
 
         /* Start rest server */
         server.run();

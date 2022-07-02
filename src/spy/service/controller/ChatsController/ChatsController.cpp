@@ -1,10 +1,11 @@
 #include <spy/service/controller/ChatsController/ChatsController.hpp>
 #include <oatpp/core/base/Environment.hpp>
+#include <spy/utils/Logger/SpyLog.h>
 
 #include <algorithm>
 
 void spy::service::controller::ChatsController::Initialize(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
-    OATPP_LOGD("ChatsController", "Initialize");
+    SPY_LOGD("ChatsController:Initialize");
 
     auto chatsPromise = handler->Execute<td::td_api::getChats>(td::td_api::make_object<td::td_api::chatListMain>(), 1000);
     auto chats = tdlpp::cast_object<td::td_api::chats>(chatsPromise->GetResponse());
@@ -35,16 +36,13 @@ void spy::service::controller::ChatsController::Initialize(const std::shared_ptr
     initialized = true;
 
 
-    // OATPP_LOGD("ChatsController", "Channels: %d", channelChats.size());
-    OATPP_LOGD("ChatsController", "Initialization finished. Fetched %d chats", chats.total_count_);
+    SPY_LOGD("ChatsController:Initialize Finished. Fetched %d chats", chats.total_count_);
 }
 
 void spy::service::controller::ChatsController::RegisterUpdates(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
+    SPY_LOGD("ChatsController:RegisterUpdates");
     handler->SetCallback<td::td_api::updateNewChat>(false, [&](td::td_api::updateNewChat& update) {
         InsertChat(*update.chat_);
-    });
-    handler->SetCallback<td::td_api::updateChatLastMessage>(false, [&](td::td_api::updateChatLastMessage& update) {
-        chatsDb->SetChatLastMessage(update.chat_id_, update.last_message_->id_);        
     });
 }
 
@@ -85,13 +83,13 @@ void spy::service::controller::ChatsController::InsertChat(td::td_api::chat& ori
     ));
 
     auto chatDto = dto::Chat::createShared();
-    chatDto->id = origin.id_;
+    chatDto->id = (int)origin.id_;
     chatDto->title = origin.title_;
     chatDto->fetchSince = StringTools::currentDatTime();
     chatDto->fetched = chatDto->fetchSince;
 
     if (origin.last_message_) {
-        chatDto->lastMessageId = origin.last_message_->id_;
+        chatDto->lastMessageId = (int)origin.last_message_->id_;
     }
 
     // Try to add chat to chats database

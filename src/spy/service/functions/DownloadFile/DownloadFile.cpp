@@ -1,4 +1,4 @@
-#include <spy/service/functions/DownloadFile.hpp>
+#include <spy/service/functions/DownloadFile/DownloadFile.hpp>
 
 #include <spy/service/controller/SettingsController/SpySettingsController.hpp>
 #include <spy/service/controller/ChatsController/ChatsController.hpp>
