@@ -88,6 +88,25 @@ void spy::service::controller::ChatsController::InsertChat(td::td_api::chat& ori
     chatDto->fetchSince = StringTools::currentDatTime();
     chatDto->fetched = chatDto->fetchSince;
 
+    switch (origin.type_->get_id()) {
+        case (td::td_api::chatTypeBasicGroup::ID): {
+            chatDto->type = dto::ChatType::chatTypeBasicGroup;
+            break;
+        }
+        case (td::td_api::chatTypeSupergroup::ID): {
+            chatDto->type = dto::ChatType::chatTypeSupergroup;
+            break;
+        }
+        case (td::td_api::chatTypePrivate::ID): {
+            chatDto->type = dto::ChatType::chatTypePrivate;
+            break;
+        }
+        case (td::td_api::chatTypeSecret::ID): {
+            chatDto->type = dto::ChatType::chatTypeSecret;
+            break;
+        }
+    };
+
     if (origin.last_message_) {
         chatDto->lastMessageId = (int)origin.last_message_->id_;
     }

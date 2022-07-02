@@ -49,8 +49,8 @@ namespace spy { namespace db {
 
     public:
         QUERY(addChat,
-            "INSERT INTO chats (id, title, lastMessageId, fetchSince, fetched) " \
-            "VALUES (:chat.id, :chat.title, :chat.lastMessageId, :chat.fetchSince, :chat.fetched) " \
+            "INSERT INTO chats (id, title, type, lastMessageId, fetchSince, fetched) " \
+            "VALUES (:chat.id, :chat.title, :chat.type, :chat.lastMessageId, :chat.fetchSince, :chat.fetched) " \
             "ON CONFLICT (id) DO UPDATE SET title = :chat.title;",
             PARAM(oatpp::Object<dto::Chat>, chat)
         );
@@ -59,6 +59,7 @@ namespace spy { namespace db {
             "UPDATE chats SET " \
             " id=:chat.id, " \
             " title=:chat.title, " \
+            " type=:chat.type, " \
             " lastMessageId=:chat.lastMessageId,"
             " fetchSince=:chat.fetchSince, " \
             " fetched=:chat.fetched " \
