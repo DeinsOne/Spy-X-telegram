@@ -27,6 +27,7 @@ add_executable(tgspy
   service/controller/DeletedContentChatController/Command/SetChatGroupTypeCommand/SetChatGroupTypeCommand.cpp
   service/controller/DeletedContentChatController/Command/SetExcludeChannelsCommand/SetExcludeChannelsCommand.cpp
   service/controller/DeletedContentChatController/Command/SetExcludedChatsCommand/SetExcludedChatsCommand.cpp
+  service/controller/DeletedContentChatController/Command/SetIncludedChatsCommand/SetIncludedChatsCommand.cpp
   service/controller/DeletedContentChatController/Command/SaveDeletedCommand/SaveDeletedCommand.cpp
   service/controller/DeletedContentChatController/Command/SaveSecretCommand/SaveSecretCommand.cpp
   service/controller/DeletedContentChatController/Command/SaveSizeCommand/SaveSizeCommand.cpp

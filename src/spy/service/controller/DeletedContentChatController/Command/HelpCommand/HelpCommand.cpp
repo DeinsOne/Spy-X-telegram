@@ -27,6 +27,7 @@ void spy::service::controller::command::HelpCommand::Process(const std::string& 
     " - `/setchatgrouptype`\n" \
     " - `/setexcludechannels`\n" \
     " - `/setexcluded`\n" \
+    " - `/setincluded`\n" \
     " - `/savedeleted`\n" \
     " - `/savesecret`\n" \
     " - `/savesize`\n" \

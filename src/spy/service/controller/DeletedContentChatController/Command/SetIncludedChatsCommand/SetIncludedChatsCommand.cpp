@@ -1,5 +1,5 @@
 
-#include <spy/service/controller/DeletedContentChatController/Command/SetExcludedChatsCommand/SetExcludedChatsCommand.hpp>
+#include <spy/service/controller/DeletedContentChatController/Command/SetIncludedChatsCommand/SetIncludedChatsCommand.hpp>
 #include <spy/service/controller/DeletedContentChatController/Command/CommandHandler.hpp>
 
 #include <spy/service/controller/SettingsController/SpySettingsController.hpp>
@@ -9,14 +9,14 @@
 #include <spy/service/functions/SendMessage/SendMessage.hpp>
 
 
-spy::service::controller::command::SetExcludedChatsCommand::SetExcludedChatsCommand(
+spy::service::controller::command::SetIncludedChatsCommand::SetIncludedChatsCommand(
     const std::shared_ptr<tdlpp::base::TdlppHandler>& tdHandler,
     const std::shared_ptr<ControllersHandler>& controllerHandler
 ) : tdHandler(tdHandler), controllerHandler(controllerHandler) {
     auto settings = this->controllerHandler->GetController<SpySettingsController>();
-    auto excludedChats = settings->GetExcludeChats();
+    auto includedChats = settings->GetIncludeChats();
 
-    for (auto chatid : excludedChats) {
+    for (auto chatid : includedChats) {
         auto result = chatsDb->getChatById(chatid);
         auto chat = result->fetch<oatpp::Vector<oatpp::Object<dto::Chat>>>(1)->at(0);
         titles[chatid] = chat->title;
@@ -25,12 +25,12 @@ spy::service::controller::command::SetExcludedChatsCommand::SetExcludedChatsComm
 
 
 
-bool spy::service::controller::command::SetExcludedChatsCommand::IsDone() {
+bool spy::service::controller::command::SetIncludedChatsCommand::IsDone() {
     return !this->inProcess;
 }
 
 
-void spy::service::controller::command::SetExcludedChatsCommand::Process(const std::string& commandLine) {
+void spy::service::controller::command::SetIncludedChatsCommand::Process(const std::string& commandLine) {
     if (skipMessage) {
         skipMessage = false;
         return;
@@ -39,31 +39,31 @@ void spy::service::controller::command::SetExcludedChatsCommand::Process(const s
     auto trimmed = StringTools::trim(commandLine);
 
     // Default command without parammeters
-    if (trimmed == "/setexcluded") sendProposition();
+    if (trimmed == "/setincluded") sendProposition();
 
-    else if (StringTools::startsWith(trimmed, "/setexcluded") && trimmed.find(' ') != std::string::npos) {
+    else if (StringTools::startsWith(trimmed, "/setincluded") && trimmed.find(' ') != std::string::npos) {
         // find command's argument
         auto argument = trimmed.substr(trimmed.find(' ') + 1);
 
-        if (setExcludedChats(argument)) {
+        if (setIncludedChats(argument)) {
             this->inProcess = false;
             sendSuccessMessage();
         }
     }
 
-    else if (StringTools::startsWith(trimmed, "/setexcluded") && trimmed.find(' ') == std::string::npos) {
+    else if (StringTools::startsWith(trimmed, "/setincluded") && trimmed.find(' ') == std::string::npos) {
         sendTryAgainMessage();
     }
 
     else {
-        if (setExcludedChats(trimmed)) {
+        if (setIncludedChats(trimmed)) {
             this->inProcess = false;
             sendSuccessMessage();
         }   
     }
 }
 
-void spy::service::controller::command::SetExcludedChatsCommand::Cencel() {
+void spy::service::controller::command::SetIncludedChatsCommand::Cencel() {
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
@@ -75,16 +75,16 @@ void spy::service::controller::command::SetExcludedChatsCommand::Cencel() {
     this->inProcess = false;
 }
 
-void spy::service::controller::command::SetExcludedChatsCommand::sendProposition() {
+void spy::service::controller::command::SetIncludedChatsCommand::sendProposition() {
     auto settings = this->controllerHandler->GetController<SpySettingsController>();
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
-    "To exclude chat from parsing send it's title or username. Relax, system tryes to identify best match. If a chat is already excluded, send its title to include\n\n" \
-    "*Current exclude*:\n";
+    "To include chat to parsing send it's title or username. Relax, system tryes to identify best match. If a chat is already included, send its title to exclude\n\n" \
+    "*Current include*:\n";
 
-    auto excludedChats = settings->GetExcludeChats();
-    for (auto chatid : excludedChats) {
+    auto includedChats = settings->GetIncludeChats();
+    for (auto chatid : includedChats) {
         auto result = chatsDb->getChatById(chatid);
         auto chat = result->fetch<oatpp::Vector<oatpp::Object<dto::Chat>>>(1)->at(0);
         text += "`" + *chat->title + "`\n";
@@ -96,11 +96,11 @@ void spy::service::controller::command::SetExcludedChatsCommand::sendProposition
     skipMessage = true;
 }
 
-void spy::service::controller::command::SetExcludedChatsCommand::sendTryAgainMessage() {
+void spy::service::controller::command::SetIncludedChatsCommand::sendTryAgainMessage() {
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" 
-    "Bad input for /setexcluded. To cancel this command send `/cancel`, or try again";
+    "Bad input for /setincluded. To cancel this command send `/cancel`, or try again";
 
     functions::SendMessage sendMessage(text, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
     sendMessage.Execute();
@@ -108,7 +108,7 @@ void spy::service::controller::command::SetExcludedChatsCommand::sendTryAgainMes
     skipMessage = true;
 }
 
-void spy::service::controller::command::SetExcludedChatsCommand::sendNotFoundMessage() {
+void spy::service::controller::command::SetIncludedChatsCommand::sendNotFoundMessage() {
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
@@ -120,7 +120,7 @@ void spy::service::controller::command::SetExcludedChatsCommand::sendNotFoundMes
     skipMessage = true;
 }
 
-void spy::service::controller::command::SetExcludedChatsCommand::sendSuggestionsMessage() {
+void spy::service::controller::command::SetIncludedChatsCommand::sendSuggestionsMessage() {
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
@@ -132,16 +132,16 @@ void spy::service::controller::command::SetExcludedChatsCommand::sendSuggestions
     skipMessage = true;
 }
 
-void spy::service::controller::command::SetExcludedChatsCommand::sendSuccessMessage() {
+void spy::service::controller::command::SetIncludedChatsCommand::sendSuccessMessage() {
     auto settings = this->controllerHandler->GetController<SpySettingsController>();
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
     "Edit successfully saved. Now you can use other commands\n\n" \
-    "*Current exclude*:\n";
+    "*Current include*:\n";
 
-    auto excludedChats = settings->GetExcludeChats();
-    for (auto chatid : excludedChats) {
+    auto includedChats = settings->GetIncludeChats();
+    for (auto chatid : includedChats) {
         auto result = chatsDb->getChatById(chatid);
         auto chat = result->fetch<oatpp::Vector<oatpp::Object<dto::Chat>>>(1)->at(0);
         text += "`" + *chat->title + "`\n";
@@ -153,17 +153,17 @@ void spy::service::controller::command::SetExcludedChatsCommand::sendSuccessMess
     skipMessage = true;
 }
 
-bool spy::service::controller::command::SetExcludedChatsCommand::setExcludedChats(const std::string& argument) {
+bool spy::service::controller::command::SetIncludedChatsCommand::setIncludedChats(const std::string& argument) {
     auto settings = this->controllerHandler->GetController<SpySettingsController>();
-    auto excludedChats = settings->GetExcludeChats();
+    auto includedChats = settings->GetIncludeChats();
 
     // Remove excluded chat    
     for (auto i : titles) {
         if (i.second == argument) {
-            auto toRemove = std::find(excludedChats.begin(), excludedChats.end(), i.first);
-            if (toRemove != excludedChats.end()) {
-                excludedChats.erase(toRemove);
-                settings->SetExcludeChats(excludedChats);
+            auto toRemove = std::find(includedChats.begin(), includedChats.end(), i.first);
+            if (toRemove != includedChats.end()) {
+                includedChats.erase(toRemove);
+                settings->SetIncludeChats(includedChats);
             }
 
             return true;
@@ -191,8 +191,8 @@ bool spy::service::controller::command::SetExcludedChatsCommand::setExcludedChat
         return false;
     }
 
-    excludedChats.emplace_back((int)chats->at(0)->id);
-    settings->SetExcludeChats(excludedChats);
+    includedChats.emplace_back((int)chats->at(0)->id);
+    settings->SetIncludeChats(includedChats);
 
     return true;
 }
