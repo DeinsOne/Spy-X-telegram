@@ -77,7 +77,7 @@ void spy::service::controller::SpySettingsController::ReadSettings(const std::st
 }
 
 void spy::service::controller::SpySettingsController::WriteSettings(const std::string& path) {
-    SPY_LOGD("SpySettingsController:ReadSettings -> %s", path.c_str());
+    SPY_LOGD("SpySettingsController:WriteSettings -> %s", path.c_str());
 
     Json::Value json;
 
