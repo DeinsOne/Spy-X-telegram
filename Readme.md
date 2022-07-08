@@ -8,7 +8,7 @@ Spy X telegram is a powerful application which, at first, stores edited, deleted
 
 Normal functioning application creates private telegram supergroup where a user can access settings. With additional settings the user can enable forwarding of delete content to this supergroup. Settings are represented as regular bots commands. Every command begins with `/`, to see all list send `/help`.
 
-<img src='docs/chat_preview.png' width='600'/>
+<img src='docs/chat_preview.png' width='70%'/>
 
 ## Building and installing
 
