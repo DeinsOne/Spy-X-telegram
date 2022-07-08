@@ -61,11 +61,11 @@ The resulting `install` directory will have standalone Spy X telegram applicatio
 | CMAKE_INSTALL_PREFIX | With superbuild enabled application install prefix is a directory where application will be composed. Otherwise will contain spy executable and resources |
 | BUILD_JOBS | Can be used to set the number given to make -j for parallel builds insted of using --parallel option |
 
-### Spy Rest API
+## Spy Rest API
 
 To inspect endpoint you can use real time oatpp-swagger documentation on `/swagger/ui` route, or text [manual](docs/endpoints.md).
 
-### Command Line Arguments
+## Command Line Arguments
 
 To control application’s behaviour spy x telegram provides several command line arguments. They can be used to enable or disable some features:
 
@@ -73,6 +73,6 @@ To control application’s behaviour spy x telegram provides several command lin
 | --- | --- | --- |
 | -p,--port | Integer parameter, defines rest server port | 8089 |
 | -r,--rest | Boolean parameter which is responsible for launching rest server | true |
-| --log_level | Controls amount of information printed to console. By default is set to info, but you can also use the fallowing values in incremental information order: fatal, error, warning, info, debug | info |
+| --log_level | Controls amount of information printed to console. By default is set to info, but you can also use the fallowing values in incremental information order: `fatal`, `error`, `warning`, `info`, `debug` | info |
 | -h,--help |  |  |
 | -v,--version |  |  |
