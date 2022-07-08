@@ -93,7 +93,7 @@ int main(int argc, char** argv) {
         /* Print some info */
         spy::utils::CmdParserSingleton::Get()->GetArgument<std::string>("log_level") == "debug" ? printf("\n\n") : printf("\n");
         SPY_LOGI("Rest server:Running on http://localhost:%d", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
-        SPY_LOGI("Rest server:Endpoints on http://localhost:%d/swegger/ui\n", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
+        SPY_LOGI("Rest server:Endpoints on http://localhost:%d/swagger/ui\n", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
 
         /* Start rest server */
         server.run();
