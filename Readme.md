@@ -43,8 +43,6 @@ Under Windows please directly use the appropriate installers for [CMake](https:/
 
 For convenience, Spy X telegram provides a CMake superbuild script which will pull down dependencies and build spy itself. By default, the result is an install directory, portable application inside.
 
- 
-
 ```sh
 mkdir build
 cd build
@@ -64,6 +62,8 @@ The resulting `install` directory will have standalone Spy X telegram applicatio
 | BUILD_JOBS | Can be used to set the number given to make -j for parallel builds insted of using --parallel option |
 
 ### Spy Rest API
+
+To inspect endpoint you can use real time oatpp-swagger documentation on `/swagger/ui` route, or text [manual](docs/endpoints.md).
 
 ### Command Line Arguments
 
