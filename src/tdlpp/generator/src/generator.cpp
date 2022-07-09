@@ -13,7 +13,7 @@
 #include <fstream>
 #include <vector>
 
-#if !defined(WIN32) && !defined(_WIN32)
+#if (CXX_FILESYSTEM_IS_EXPERIMENTAL == true)
     #include <experimental/filesystem>
     namespace fs = std::experimental::filesystem;
 #else

@@ -1,12 +1,12 @@
 
 add_executable(binding_generator src/generator.cpp)
-target_link_libraries(binding_generator
-  PRIVATE stdc++fs
-)
 
-if (${SPY_ENABLE_OPTIMIZATION})
-  target_compile_options(binding_generator PRIVATE -O2)
-endif()
+find_package(Filesystem REQUIRED)
+
+target_link_libraries(binding_generator PRIVATE std::filesystem)
+target_compile_definitions(binding_generator
+  PRIVATE -DCXX_FILESYSTEM_IS_EXPERIMENTAL=${CXX_FILESYSTEM_IS_EXPERIMENTAL}
+)
 
 ## Generate bindings header here
 set(TDLPP_BINDING_HEADER ${CMAKE_BINARY_DIR}/IdNameBinding.hpp)

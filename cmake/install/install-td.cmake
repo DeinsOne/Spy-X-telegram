@@ -1,5 +1,9 @@
 
 function(install_td)
+  if (WIN32 AND ${SPY_PACKAGED_BUILD})
+    set(_td_cmake_modules ${CMAKE_SOURCE_DIR}/cmake/find/openssl)
+  endif()
+
   superbuild_subproject(
     NAME td
     GIT "https://github.com/tdlib/td.git"
@@ -10,6 +14,7 @@ function(install_td)
       -DGPERF_EXECUTABLE:FILEPATH=${GPERF_EXECUTABLE}
       -DZLIB_ROOT=${ZLIB_ROOT}
       -DOPENSSL_ROOT_DIR=${OPENSSL_ROOT_DIR}
+      -DCMAKE_MODULE_PATH=${_td_cmake_modules}
   )
 
 endfunction()
@@ -19,10 +24,7 @@ endfunction()
 macro(include_td)
   set(Td_DIR ${CMAKE_BINARY_DIR}/external/td/install/lib/cmake/Td CACHE PATH "Tdlib prefix")
 
-  list(APPEND CMAKE_PREFIX_PATH ${Td_DIR})
-  list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR}/external/td/install)
-
-  find_package(Td REQUIRED NO_DEFAULT_PATH)
+  find_package(Td CONFIG REQUIRED)
 
 endmacro()
 

@@ -37,14 +37,10 @@ target_include_directories(tdlpp PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../ ${CMAKE_BI
 target_link_libraries(tdlpp PUBLIC ${OPENSSL_CRYPTO_LIBRARY} ${OPENSSL_SSL_LIBRARY} ${ZLIB_LIBRARIES})
 target_link_libraries(tdlpp PUBLIC Td::TdStatic PUBLIC plog::plog)
 
-
-if (${SPY_ENABLE_OPTIMIZATION})
-  target_compile_options(tdlpp PRIVATE -O3)
-endif()
+target_compile_options(tdlpp PRIVATE ${SPY_COMPILE_OPTIONS})
 
 
-## Instalation
-install(TARGETS tdlpp DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS tdlpp DESTINATION ${SPY_INSTALL_PACKAGED_DIR})
 if (${SPY_PACKAGED_BUILD})
   set_target_properties(tdlpp PROPERTIES INSTALL_RPATH .)
 endif()

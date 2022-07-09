@@ -32,6 +32,9 @@ void spy::service::controller::DeletedContentChatController::Initialize(const st
     // Find deleted content chat's creator
     GetDeletedContentChatOwner(handler);
 
+    // Exclude chat from parsing
+    ExcludeParwingDeletedContentChat(handler);
+
     initialized = true;
 
     SPY_LOGD("DeletedContentChatController:Initialize Finished chat: %d", deletedContentSupergroupChatId);
@@ -147,9 +150,6 @@ void spy::service::controller::DeletedContentChatController::CreateDeletedConten
         },
         [](auto&) { }
     ));
-
-    // Exclude chat from parsing
-    ExcludeParwingDeletedContentChat(handler);
 
 
     // Set chat photo

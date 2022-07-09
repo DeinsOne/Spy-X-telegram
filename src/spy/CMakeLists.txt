@@ -4,6 +4,7 @@ find_package(oatpp-swagger  1.3.0 REQUIRED)
 find_package(oatpp-sqlite   1.3.0 REQUIRED)
 find_package(cxxopts REQUIRED)
 find_package(Threads REQUIRED)
+find_package(Filesystem REQUIRED)
 find_package(jsoncpp REQUIRED)
 
 add_executable(tgspy
@@ -40,10 +41,16 @@ target_link_libraries(tgspy
   PRIVATE oatpp::oatpp-swagger
   PRIVATE oatpp::oatpp-sqlite
   PRIVATE cxxopts::cxxopts
-  PRIVATE stdc++fs
   PRIVATE jsoncpp_static
 )
+
+target_link_libraries(tgspy PRIVATE std::filesystem)
+target_compile_definitions(tgspy
+  PRIVATE -DCXX_FILESYSTEM_IS_EXPERIMENTAL=${CXX_FILESYSTEM_IS_EXPERIMENTAL}
+)
+
 target_include_directories(tgspy PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../)
+target_include_directories(tgspy PRIVATE ${CMAKE_BINARY_DIR}/external/td/install/include)
 
 target_compile_definitions(tgspy
   ## define path to swagger-ui static resources folder
@@ -56,9 +63,7 @@ target_compile_definitions(tgspy
   PRIVATE -DSPY_DATA_FOLDER="spydata/"
 )
 
-if (${SPY_ENABLE_OPTIMIZATION})
-  target_compile_options(tgspy PRIVATE -O3)
-endif()
+target_compile_options(tgspy PRIVATE ${SPY_COMPILE_OPTIONS})
 
 
 install(TARGETS tgspy DESTINATION ${CMAKE_INSTALL_PREFIX})

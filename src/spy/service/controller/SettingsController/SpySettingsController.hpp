@@ -13,7 +13,7 @@ namespace spy { namespace service { namespace controller {
 
     class SpySettingsController : public BaseController {
     public:
-        SpySettingsController() : chatsGroupType(ChatsGroupType::include_all), saveMediaSizeLimit(50) {
+        SpySettingsController() {
         }
 
         static const std::int32_t ID = 6964377;
@@ -50,14 +50,14 @@ namespace spy { namespace service { namespace controller {
         void onUpdateNewMessage(td::td_api::updateNewMessage& update);
 
     protected:
-        ChatsGroupType chatsGroupType;
+        ChatsGroupType chatsGroupType{ChatsGroupType::include_all};
         std::vector<std::int64_t> includeChats;     // Works only if is exclude_all chats group type
         std::vector<std::int64_t> excludeChats;     // Works only if is include_all chats group type.
-        bool forceExcludeChannels{true};
+        bool forceExcludeChannels{false};
 
         bool saveDeletedMedia{true};
         bool saveSecretContent{true};
-        float saveMediaSizeLimit;
+        float saveMediaSizeLimit{20};
     };
 
 } } } // namespace spy { namespace service { namespace controller {

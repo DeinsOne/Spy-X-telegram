@@ -30,15 +30,38 @@ if (NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
 endif()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake
+  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/find
+)
 
 message("======================================================")
 message("TelegramSpy build type: ${CMAKE_BUILD_TYPE}")
-message("TelegramSpy install into: ${SPY_INSTALLDITECTORY_NAME}")
+message("TelegramSpy install into: ${CMAKE_INSTALL_PREFIX}")
 message("======================================================")
 
 ##################################################################################################################
 
+## Enable symbols export for windows
+if (WIN32)
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
+
+## Add compiler options
+if (MSVC)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/compiler/msvc.cmake)
+elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/compiler/gcc.cmake)
+endif()
+
+## Windows cannot manage binaries in subdirectories. That's why they have to be installed into runtime directory
+if (WIN32)
+  set(SPY_INSTALL_PACKAGED_DIR ${CMAKE_INSTALL_PREFIX})
+else()
+  set(SPY_INSTALL_PACKAGED_DIR ${CMAKE_INSTALL_PREFIX}/bin)
+endif()
+
+##################################################################################################################
 
 ## Resolve dependencies 
 add_subdirectory(external)
