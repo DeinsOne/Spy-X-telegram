@@ -1,6 +1,5 @@
 
 find_package(Td REQUIRED NO_DEFAULT_PATH)
-find_package(OpenSSL REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(plog REQUIRED)
 

@@ -24,6 +24,9 @@ endfunction()
 macro(include_td)
   set(Td_DIR ${CMAKE_BINARY_DIR}/external/td/install/lib/cmake/Td CACHE PATH "Tdlib prefix")
 
+  list(APPEND CMAKE_PREFIX_PATH ${Td_DIR})
+  list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR}/external/td/install)
+
   find_package(Td CONFIG REQUIRED)
 
 endmacro()
