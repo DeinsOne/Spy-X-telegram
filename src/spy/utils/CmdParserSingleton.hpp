@@ -36,7 +36,7 @@ namespace spy { namespace utils {
                 exit(0);
             }
             else if (result.count("version")) {
-                printf("TelegramSpy v%s\n", SPY_VERSION_STRING);
+                printf("Spy X telegram v%s\n", SPY_VERSION_STRING);
                 exit(0);
             }
         }
@@ -58,9 +58,9 @@ namespace spy { namespace utils {
          */
         CmdParserSingleton() {
             options = std::make_shared<cxxopts::Options>(
-                "TelegramSpy",
+                "Spy X telegram",
                 R"(
-TelegramSpy is a powerful application which, at first, stores
+Spy X telegram is a powerful application which, at first, stores
 edited, deleted and secret messages. It provides rest api to
 allow external app to use telegram features
                 )"
@@ -68,8 +68,7 @@ allow external app to use telegram features
 
             options->set_width(75);
             options->add_options()
-                ("p,port",      "Rest client port",                     cxxopts::value<int>()->default_value("8089"))
-                ("r,rest",      "Enable rest client",                   cxxopts::value<bool>()->default_value("true"))
+                ("p,port",      "Rest server port",                     cxxopts::value<int>()->default_value("8089"))
                 ("log_level",   "Enable logging",                       cxxopts::value<std::string>()->default_value("info"))
                 ("h,help",      "Telegram spy help information")
                 ("v,version",   "Telegram spy version info");
