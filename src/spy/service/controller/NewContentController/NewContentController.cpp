@@ -81,7 +81,7 @@ void spy::service::controller::NewContentController::onUpdateNewMessage(td::td_a
     }
 
     // Process message
-    SPY_LOGD("NewContentController:onUpdateNewMessage -> %s id: %ld", TDLPP_TD_ID_NAME(update.message_->content_->get_id()), update.message_->id_);
+    SPY_LOGD("NewContentController:onUpdateNewMessage -> %s id: %ld", TDLPP_TD_ID_NAME(update.message_->content_->get_id()), (int)update.message_->id_);
 
     // Download file if any is attached
     auto worker = std::make_shared<service::content::ContentWorkerFactory>(*update.message_->content_, (int)update.message_->id_, (int)update.message_->chat_id_);
