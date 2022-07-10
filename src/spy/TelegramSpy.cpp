@@ -3,7 +3,6 @@
 
 #include <oatpp/core/base/Environment.hpp>
 #include <oatpp/network/Server.hpp>
-#include <oatpp-swagger/Controller.hpp>
 #include <csignal>
 
 #include <spy/auth/SpyAuth.hpp>
@@ -80,13 +79,19 @@ int main(int argc, char** argv) {
         OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 
         /* Add endpoints */
-        oatpp::web::server::api::Endpoints docEndpoints;
-        docEndpoints.append(router->addController(spy::controller::ChatsController::createShared())->getEndpoints());
-        docEndpoints.append(router->addController(spy::controller::SettingsController::createShared(
+        auto chatsController = router->addController(spy::controller::ChatsController::createShared());
+        auto settingsController = router->addController(spy::controller::SettingsController::createShared(
             controllersHandler->GetController<spy::service::controller::SpySettingsController>()
-        ))->getEndpoints());
+        ));
 
-        router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
+        #ifdef SPY_SWAGGER_RUNTIME
+            oatpp::web::server::api::Endpoints docEndpoints;
+            docEndpoints.append(chatsController->getEndpoints());
+            docEndpoints.append(settingsController->getEndpoints());
+
+            router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
+        #endif // SPY_SWAGGER_RUNTIME
+
         router->addController(spy::controller::StaticController::createShared());
 
 
@@ -102,7 +107,10 @@ int main(int argc, char** argv) {
         /* Print some info */
         spy::utils::CmdParserSingleton::Get()->GetArgument<std::string>("log_level") == "debug" ? printf("\n\n") : printf("\n");
         SPY_LOGI("Rest server:Running on http://localhost:%d", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
-        SPY_LOGI("Rest server:Endpoints on http://localhost:%d/swagger/ui\n", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
+
+        #ifdef SPY_SWAGGER_RUNTIME
+            SPY_LOGI("Rest server:Endpoints on http://localhost:%d/swagger/ui\n", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
+        #endif // SPY_SWAGGER_RUNTIME
 
         /* Start rest server */
         server.run();

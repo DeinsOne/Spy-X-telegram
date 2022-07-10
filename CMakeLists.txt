@@ -20,6 +20,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(SPY_PACKAGED_BUILD "If ON builds all libraries from source to port in standalone folder" OFF)
 option(SPY_BUILD_DOCUMENTATION "Builds documentation to 'docs/html' folder" OFF)
+option(SPY_ENABLE_SWAGGER_RUNTIME "Enables runtime swagger documentation" ON)
 option(SPY_ENABLE_TESTING "If ON builds tests" ON)
 option(SPY_ENABLE_OPTIMIZATION "If ON compile spy with optimization" OFF)
 
