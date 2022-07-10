@@ -82,10 +82,13 @@ int main(int argc, char** argv) {
         /* Add endpoints */
         oatpp::web::server::api::Endpoints docEndpoints;
         docEndpoints.append(router->addController(spy::controller::ChatsController::createShared())->getEndpoints());
+        docEndpoints.append(router->addController(spy::controller::SettingsController::createShared(
+            controllersHandler->GetController<spy::service::controller::SpySettingsController>()
+        ))->getEndpoints());
 
         router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
         router->addController(spy::controller::StaticController::createShared());
-        router->addController(spy::controller::ChatsController::createShared());
+
 
         /* Initialize server */
         OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, connectionHandler);

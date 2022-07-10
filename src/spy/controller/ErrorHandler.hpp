@@ -2,7 +2,7 @@
 #ifndef spy_ControllerErrorHandler
 #define spy_ControllerErrorHandler
 
-#include <spy/dto/StatusDto.hpp>
+#include <spy/dto/helpers/StatusDto.hpp>
 
 #include <oatpp/web/server/handler/ErrorHandler.hpp>
 #include <oatpp/web/protocol/http/outgoing/ResponseFactory.hpp>
