@@ -3,6 +3,7 @@
 
 #include <oatpp/core/base/Environment.hpp>
 #include <oatpp/network/Server.hpp>
+#include <oatpp-swagger/Controller.hpp>
 #include <csignal>
 
 #include <spy/auth/SpyAuth.hpp>
