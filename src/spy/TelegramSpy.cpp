@@ -13,6 +13,7 @@
 
 #include <spy/controller/StaticController.hpp>
 #include <spy/controller/ChatsController/ChatsController.hpp>
+#include <spy/controller/SettingsController/SettingsController.hpp>
 
 #include <spy/utils/Logger/SpyLog.h>
 #include <spy/version.h>
@@ -78,6 +79,10 @@ int main(int argc, char** argv) {
         OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 
         /* Add endpoints */
+        oatpp::web::server::api::Endpoints docEndpoints;
+        docEndpoints.append(router->addController(spy::controller::ChatsController::createShared())->getEndpoints());
+
+        router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
         router->addController(spy::controller::StaticController::createShared());
         router->addController(spy::controller::ChatsController::createShared());
 

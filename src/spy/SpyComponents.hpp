@@ -2,6 +2,8 @@
 #ifndef spy_SpyComponent
 #define spy_SpyComponent
 
+#include <spy/SwaggerComponent.hpp>
+
 #include <oatpp/core/macro/component.hpp>
 #include <oatpp/parser/json/mapping/ObjectMapper.hpp>
 
@@ -18,6 +20,11 @@ namespace spy {
 
     class SpyComponents {
     public:
+        /**
+         * Swagger documentation component
+         */
+        SwaggerComponent swaggerComponent;
+
         /**
          * Create ObjectMapper component to serialize/deserialize DTOs in Controller's API
          */

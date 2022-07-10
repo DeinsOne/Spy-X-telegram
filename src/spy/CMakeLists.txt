@@ -55,6 +55,8 @@ target_include_directories(tgspy PRIVATE ${CMAKE_BINARY_DIR}/external/td/install
 target_compile_definitions(tgspy
   ## define path to swagger-ui static resources folder
   PRIVATE -DOATPP_SWAGGER_RES_PATH="${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res"
+  PRIVATE -DSWAGGER_ROOT_PATH="/swagger"
+  PRIVATE -DSWAGGER_UI_PATH="/ui"
 
   ## Path to database migration scripts
   PRIVATE -DDATABASE_MIGRATIONS="resources/migrations/"
