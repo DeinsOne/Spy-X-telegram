@@ -165,3 +165,153 @@ void spy::db::MessagesDatabase::AddFile(const std::string& id, const std::string
     // Commit transaction to database
     transaction.commit();
 }
+
+oatpp::Object<spy::dto::MessageDto> spy::db::MessagesDatabase::GetMessageById(const std::int64_t& chat_id, const std::int64_t& message_id) {
+    // Get base message
+    auto baseMessageResult = executeQuery(
+        "SELECT * FROM messages WHERE id=:id AND chat_id=:chat_id;",
+        {
+            { "id", oatpp::Int64(message_id) },
+            { "chat_id", oatpp::Int64(chat_id) }
+        }
+    );
+
+    if (!baseMessageResult->isSuccess()) {
+        SPY_LOGE("MessagesDatabase:GetMessageById : %s", baseMessageResult->getErrorMessage()->c_str());
+        return nullptr;
+    }
+    auto messages = baseMessageResult->fetch<oatpp::Vector<oatpp::Object<spy::dto::MessageDto>>>();
+    if (messages->size() != 1) return nullptr;
+
+    auto message = messages->at(0);
+
+    // Get message's modifications
+    auto messagesModificationResult = executeQuery(
+        "SELECT * FROM modifications WHERE id=:id AND chat_id=:chat_id ORDER BY version_ ASC LIMIT 20;",    // FIXME: Improve limitation logic
+        {
+            { "id", oatpp::Int64(message_id) },
+            { "chat_id", oatpp::Int64(chat_id) }
+        }
+    );
+
+    if (!messagesModificationResult->isSuccess()) {
+        SPY_LOGE("MessagesDatabase:GetMessageById : %s", messagesModificationResult->getErrorMessage()->c_str());
+        return nullptr;
+    }
+    auto modifications = messagesModificationResult->fetch<oatpp::Vector<oatpp::Object<spy::dto::MessageModificationDto>>>();
+    if (modifications->size() <= 0) return nullptr;
+
+    // Create modifications vector
+    message->modifications = oatpp::Vector<oatpp::Object<spy::dto::MessageModificationContentDto>>::createShared();
+
+    // Initialize modifications
+    for (auto it = modifications->begin(); it != modifications->end(); ++it) {
+        auto modification = *it;
+        auto worker = std::make_shared<service::content::ContentWorkerFactory>((int)*modification->message_content, message_id, chat_id);
+        modification->content = worker->GetFromDatabase(*modification->version_);
+
+        message->modifications->emplace_back(modification);
+    }
+
+    return message;
+}
+
+oatpp::Object<spy::dto::MessageDto> spy::db::MessagesDatabase::GetChatLastMessage(const std::int64_t& chat_id) {
+    auto baseMessageResult = executeQuery(
+        "SELECT * FROM messages WHERE chat_id=:chat_id AND id=(SELECT id FROM modifications WHERE chat_id=:chat_id AND version_=0 ORDER BY date_ DESC LIMIT 1);",
+        {
+            { "chat_id", oatpp::Int64(chat_id) }
+        }
+    );
+
+    if (!baseMessageResult->isSuccess()) {
+        SPY_LOGE("MessagesDatabase:GetChatLastMessage : %s", baseMessageResult->getErrorMessage()->c_str());
+        return nullptr;
+    }
+    auto messages = baseMessageResult->fetch<oatpp::Vector<oatpp::Object<spy::dto::MessageDto>>>();
+    if (messages->size() != 1) return nullptr;
+
+
+    auto message = messages->at(0);
+    message->modifications = oatpp::Vector<oatpp::Object<spy::dto::MessageModificationContentDto>>::createShared();
+
+    // Get message's modifications
+    auto messagesModificationResult = executeQuery(
+        "SELECT * FROM modifications WHERE chat_id=:chat_id AND id=(SELECT id FROM modifications WHERE chat_id=:chat_id AND version_=0 ORDER BY date_ DESC LIMIT 1) ORDER BY version_ ASC LIMIT 20;",    // FIXME: Improve limitation logic
+        {
+            { "chat_id", oatpp::Int64(chat_id) }
+        }
+    );
+
+    if (!messagesModificationResult->isSuccess()) {
+        SPY_LOGE("MessagesDatabase:GetChatLastMessage : %s", messagesModificationResult->getErrorMessage()->c_str());
+        return nullptr;
+    }
+    auto modifications = messagesModificationResult->fetch<oatpp::Vector<oatpp::Object<spy::dto::MessageModificationDto>>>();
+    if (modifications->size() <= 0) return nullptr;
+
+    // Initialize modifications
+    for (auto it = modifications->begin(); it != modifications->end(); ++it) {
+        auto modification = *it;
+        auto worker = std::make_shared<service::content::ContentWorkerFactory>((int)*modification->message_content, (*it)->id, chat_id);
+        modification->content = worker->GetFromDatabase(*modification->version_);
+
+        message->modifications->emplace_back(modification);
+    }
+
+    return message;
+}
+
+oatpp::Vector<oatpp::Object<spy::dto::MessageDto>> spy::db::MessagesDatabase::GetChatMessages(const std::int64_t& chat_id, const std::int64_t& first_id, const int32_t& limit) {
+
+    auto messageIdsResult = executeQuery(
+        "SELECT * FROM messages WHERE chat_id=:chatid AND id IN (" \
+            "SELECT id FROM modifications WHERE chat_id=:chatid AND version_=0 AND date_ < (SELECT date_ FROM modifications WHERE chat_id=:chatid AND id=:firstid AND version_=0 LIMIT 1) ORDER BY date_ DESC " \
+        ") LIMIT :limit;",
+        {
+            { "chatid", oatpp::Int64(chat_id) },
+            { "firstid", oatpp::Int64(first_id) },
+            { "limit", oatpp::Int32(limit) }
+        }
+    );
+
+    if (!messageIdsResult->isSuccess()) {
+        SPY_LOGE("MessagesDatabase:GetChatMessages : %s", messageIdsResult->getErrorMessage()->c_str());
+        return nullptr;
+    }
+
+    auto messages = messageIdsResult->fetch<oatpp::Vector<oatpp::Object<spy::dto::MessageDto>>>();
+    if (messages->size() <= 0) return nullptr;
+
+    for (auto it = messages->begin(); it != messages->end(); ++it) {
+        (*it)->modifications = oatpp::Vector<oatpp::Object<spy::dto::MessageModificationContentDto>>::createShared();
+
+        // Get message's modifications
+        auto messageModificationResult = executeQuery(
+            "SELECT * FROM modifications WHERE id=:id AND chat_id=:chat_id ORDER BY version_ ASC LIMIT 20;",    // FIXME: Improve limitation logic
+            {
+                { "id", (*it)->id },
+                { "chat_id", (*it)->chat_id }
+            }
+        );
+
+
+        if (!messageModificationResult->isSuccess()) {
+            SPY_LOGE("MessagesDatabase:GetChatMessages modification : %s", messageModificationResult->getErrorMessage()->c_str());
+            return nullptr;
+        }
+        auto modifications = messageModificationResult->fetch<oatpp::Vector<oatpp::Object<spy::dto::MessageModificationDto>>>();
+        if (modifications->size() <= 0) continue;
+
+        // Insert modifications
+        for (auto mit = modifications->begin(); mit != modifications->end(); ++mit) {
+            auto modification = *mit;
+            auto worker = std::make_shared<service::content::ContentWorkerFactory>((int)*modification->message_content, *(*it)->id, chat_id);
+            modification->content = worker->GetFromDatabase(*modification->version_);
+
+            (*it)->modifications->emplace_back(modification);
+        }
+    }
+
+    return messages;
+}

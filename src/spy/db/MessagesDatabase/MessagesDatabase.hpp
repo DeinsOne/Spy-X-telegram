@@ -11,7 +11,7 @@
 
 #include <td/telegram/td_api.h>
 
-#include <spy/dto/MessageModification.hpp>
+#include <spy/dto/Message.hpp>
 #include <spy/utils/Logger/SpyLog.h>
 
 #include OATPP_CODEGEN_BEGIN(DbClient)      //<- Begin Codegen
@@ -35,6 +35,12 @@ namespace spy { namespace db {
                 SPY_LOGE("MessagesDatabase:MessagesDatabase Migration failed -> %s", err.what());
             }
         }
+
+    public:
+        oatpp::Object<dto::MessageDto> GetMessageById(const std::int64_t& chat_id, const std::int64_t& message_id);
+
+        oatpp::Object<dto::MessageDto> GetChatLastMessage(const std::int64_t& chat_id);
+        oatpp::Vector<oatpp::Object<dto::MessageDto>> GetChatMessages(const std::int64_t& chat_id, const std::int64_t& first_id, const int32_t& limit);
 
     public:
         void AddMessage(td::td_api::message& message);

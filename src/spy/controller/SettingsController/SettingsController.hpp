@@ -11,7 +11,6 @@
 
 #include <spy/dto/SpySettings.hpp>
 #include <spy/dto/helpers/SequenceDto.hpp>
-#include <spy/dto/helpers/StatusDto.hpp>
 
 #include OATPP_CODEGEN_BEGIN(ApiController)
 

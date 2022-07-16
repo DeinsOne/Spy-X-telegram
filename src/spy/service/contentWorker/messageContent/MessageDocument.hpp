@@ -5,6 +5,7 @@
 #include <spy/service/contentWorker/ContentWorker.hpp>
 #include <oatpp/core/macro/component.hpp>
 #include <spy/db/MessagesDatabase/MessagesDatabase.hpp>
+#include <spy/dto/messageContent/MessageDocument.hpp>
 
 #include <spy/service/functions/Utils/FormattedTextToMarkdown.hpp>
 #include <spy/service/functions/DownloadFile/DownloadFile.hpp>
@@ -64,6 +65,10 @@ namespace spy { namespace service { namespace content {
                     SPY_LOGF("MessageDocument:DownloadContent Accepted bad content, messageDocument expected");
                 }
             ));
+        }
+
+        virtual oatpp::Any GetFromDatabase(const std::int32_t& version) override {
+            return content::GetFromDatabase<spy::dto::messageContent::MessageDocumentDto>(messagesDb, "messageDocument", chat_id, message_id, version);
         }
 
     private:

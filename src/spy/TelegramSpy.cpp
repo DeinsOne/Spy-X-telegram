@@ -14,6 +14,7 @@
 #include <spy/controller/StaticController.hpp>
 #include <spy/controller/ChatsController/ChatsController.hpp>
 #include <spy/controller/SettingsController/SettingsController.hpp>
+#include <spy/controller/MessagesController/MessagesController.hpp>
 
 #include <spy/utils/Logger/SpyLog.h>
 #include <spy/version.h>
@@ -81,11 +82,13 @@ int main(int argc, char** argv) {
     auto settingsController = router->addController(spy::controller::SettingsController::createShared(
         controllersHandler->GetController<spy::service::controller::SpySettingsController>()
     ));
+    auto messagesController = router->addController(spy::controller::MessagesController::createShared());
 
     #ifdef SPY_SWAGGER_RUNTIME
         oatpp::web::server::api::Endpoints docEndpoints;
         docEndpoints.append(chatsController->getEndpoints());
         docEndpoints.append(settingsController->getEndpoints());
+        docEndpoints.append(messagesController->getEndpoints());
 
         router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
     #endif // SPY_SWAGGER_RUNTIME
