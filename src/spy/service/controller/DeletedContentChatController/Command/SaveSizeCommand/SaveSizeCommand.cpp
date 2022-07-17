@@ -20,30 +20,25 @@ void spy::service::controller::command::SaveSizeCommand::Process(const std::stri
     }
 
     auto trimmed = StringTools::trim(commandLine);
-    auto parts = StringTools::split(trimmed, ' ');
-
 
     // Default command without parammeters
     if (trimmed == "/savesize") sendProposition();
 
-    // Command with parammeters
-    else if (parts.size() == 2 && StringTools::startsWith(trimmed, "/savesize")) {
-        if (setSaveDeleted(parts.back())) {
+    else if (StringTools::startsWith(trimmed, "/savesize")) {
+        if (setSaveDeleted(trimmed.substr(sizeof("/savesize ") - 1))) {
             this->inProcess = false;
             sendSuccessMessage();
         }
         else sendTryAgainMessage();
     }
 
-    else if (parts.size() <= 1) {
-        if (setSaveDeleted(parts.back())) {
+    else {
+        if (setSaveDeleted(trimmed)) {
             this->inProcess = false;
             sendSuccessMessage();
         }
         else sendTryAgainMessage();
     }
-
-    else sendTryAgainMessage();
 }
 
 void spy::service::controller::command::SaveSizeCommand::Cencel() {
@@ -122,7 +117,7 @@ bool spy::service::controller::command::SaveSizeCommand::setSaveDeleted(const st
     auto param = StringTools::toLower(argument);
 
     // Read megabytes
-    if (std::regex_match(param, std::regex("(\\d+)((.(\\d+)*)?)(mb|megabytes)"))) {
+    if (std::regex_match(param, std::regex("(\\d+)(\\s*)(mb|Mb|MB)"))) {
         float number = std::stof(std::regex_replace(param, std::regex("[a-z]*"), ""));
         if (number <= 0) return false;
 
@@ -131,7 +126,7 @@ bool spy::service::controller::command::SaveSizeCommand::setSaveDeleted(const st
     }
 
     // Read kilobytes
-    else if (std::regex_match(param, std::regex("(\\d+)((.(\\d+)*)?)(kb|kilobytes)"))) {
+    else if (std::regex_match(param, std::regex("(\\d+)(\\s*)(kb|Kb|KB)"))) {
         float number = std::stof(std::regex_replace(param, std::regex("[a-z]*"), ""));
         if (number <= 0) return false;
 
