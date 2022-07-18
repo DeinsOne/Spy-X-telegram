@@ -7,23 +7,39 @@
 
 namespace spy { namespace service { namespace functions {
 
+    enum class SendMessageParseMode {
+        ParseModeMarkdown = 0,
+        ParseModeHtml
+    };
+
     class SendMessage : IFunction {
     public:
         SendMessage(
             const std::string& message,
             const std::int64_t& chatId,
-            const std::shared_ptr<tdlpp::base::TdlppHandler>& handler
+            const std::shared_ptr<tdlpp::base::TdlppHandler>& handler,
+            const SendMessageParseMode parseMode = SendMessageParseMode::ParseModeMarkdown
         )
-            : message_(message), chatId_(chatId), handler_(handler)
+            : message_(message), chatId_(chatId), handler_(handler), parseMode_(parseMode)
         {}
 
     public:
-        virtual void Execute() override;
+        virtual void Execute() override {
+            switch ((int)parseMode_) {
+                case (int)SendMessageParseMode::ParseModeMarkdown: return SendMarkdown();
+                case (int)SendMessageParseMode::ParseModeHtml: return SendHtml();
+            }
+        }
+
+    private:
+        void SendMarkdown();
+        void SendHtml();
 
     protected:
         std::shared_ptr<tdlpp::base::TdlppHandler> handler_;
         std::string message_;
         std::int64_t chatId_;
+        SendMessageParseMode parseMode_;
     };
 
 } } } // namespace spy { namespace service { namespace functions {
