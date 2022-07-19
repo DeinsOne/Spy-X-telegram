@@ -35,7 +35,7 @@ void spy::service::controller::command::HelpCommand::Process(const std::string& 
     auto settings = this->controllerHandler->GetController<SpySettingsController>(); 
 
     std::string chatGroupType = (settings->GetChatsGroupType() == ChatsGroupType::include_all ? "include all" : "exclude all");
-    std::string excludeChannels = (settings->GetForceExcludeChannels() ? "exclude" : "include");
+    std::string excludeChannels = (settings->GetForceExcludeChannels() ? "ignore" : "include");
     std::string saveDeleted = (settings->GetSaveDeletedMedia() ? "save" : "ignore");
     std::string saveSecret = (settings->GetSaveSecretContent() ? "save" : "ignore");
     std::string saveSize = std::to_string(settings->GetSaveMediaSizeLimit());

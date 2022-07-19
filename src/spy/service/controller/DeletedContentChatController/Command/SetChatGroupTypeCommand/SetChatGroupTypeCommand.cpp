@@ -49,7 +49,7 @@ void spy::service::controller::command::SetChatGroupTypeCommand::Cencel() {
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
-    "The command was cancelled, now you can use other commands";
+    "The command was cancelled 😣, now you can use other one";
 
     functions::SendMessage sendMessage(text, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
     sendMessage.Execute();
@@ -62,10 +62,12 @@ void spy::service::controller::command::SetChatGroupTypeCommand::sendProposition
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
-    "To set processing group type send `include_all` or `exclude_all`\n\n" \
-    "*Current type*: ";
+    "*Parse chat group type* ✍️\n\n" \
+    "Chat parsing allows you to store sensitive content (deleted or secret media) from specified group of chats. You can parse all chat or certain only.\n\n" \
+    "To parse all chats send *include all*. To parse only particular ones send *exclude all* (assure to exclude chat with `/setexcluded` command). To cancel use `/cancel` command.\n\n" \
+    "*Current type:*\n   ";
 
-    std::string type = settings->GetChatsGroupType() == ChatsGroupType::include_all ? "include-all" : "exclude-all";
+    std::string type = settings->GetChatsGroupType() == ChatsGroupType::include_all ? "`include all`" : "`exclude all`";
 
     functions::SendMessage sendMessage(text + type, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
     sendMessage.Execute();
@@ -76,8 +78,8 @@ void spy::service::controller::command::SetChatGroupTypeCommand::sendProposition
 void spy::service::controller::command::SetChatGroupTypeCommand::sendTryAgainMessage() {
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
-    std::string text = "" \
-    "Bad input for /setchatgrouptype. To cancel this command send `/cancel`, or try again";
+    std::string text = "" 
+    "Probably there is some mistake so try again 🤔 To cancel use `/cancel` command.";
 
     functions::SendMessage sendMessage(text, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
     sendMessage.Execute();
@@ -90,12 +92,9 @@ void spy::service::controller::command::SetChatGroupTypeCommand::sendSuccessMess
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
-    "Edit successfully saved. Now you can use other commands\n\n" \
-    "*Current type*: ";
+    "Edit successfully saved 🙂 Now you can use other commands";
 
-    std::string type = settings->GetChatsGroupType() == ChatsGroupType::include_all ? "include-all" : "exclude-all";
-
-    functions::SendMessage sendMessage(text + type, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
+    functions::SendMessage sendMessage(text, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
     sendMessage.Execute();
 
     skipMessage = true;

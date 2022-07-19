@@ -5,7 +5,7 @@
 #include <spy/service/controller/BaseController.hpp>
 
 #define SPY_DELETED_CONTENT_CHAT_TITLE "Spy X telegram"
-#define SPY_DELETED_CONTENT_CHAT_DESCRIPTION "Spy X telegram is a powerful application which, at first, stores edited, deleted and secret messages. It provides rest api to allow external app to use telegram features"
+#define SPY_DELETED_CONTENT_CHAT_DESCRIPTION "Spy X telegram is an open source desktop telegram client with additional features which is focused on security and speed\nIn this chat you can manage its settings"
 
 #include <spy/service/controller/DeletedContentChatController/Command/ICommand.hpp>
 

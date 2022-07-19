@@ -84,7 +84,7 @@ void spy::service::controller::command::SetExcludedChatsCommand::sendProposition
 
     std::string text = "" \
     "*Exclude chat* 🔪\n\n" \
-    "Excluding the chat you *wont be able* to store sensitive content from it(deleted or secret media).\n\n"\
+    "Excluding the chat with 'include all' chat group type you'll disable its parsing. Excluding the chat with 'exclude all' chat group type you'll enable its parsing. See `/setchatgrouptype` command.\n\n"\
     "To exclude chat from parsing send it's *title* or *username* the most accurately. The simplest way to do that is to open the desired chat -> copy the title -> paste and send here. To cancel use `/cancel` command.\n\n" \
     "If the chat is already in the list this will remove it.\n\n" \
     "*Currently excluded:*";
