@@ -72,49 +72,56 @@ int main(int argc, char** argv) {
 
     auto spyService = spy::service::SpyService::CreateShared(tdlppHandler, controllersHandler);
 
-    /* Initializing oatpp components */
-    spy::SpyComponents components;
+    #ifdef SPY_ENABLE_WEB_SERVER_RUNTIME
+        /* Initializing oatpp components */
+        spy::SpyComponents components;
 
-    OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
+        OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 
-    /* Add endpoints */
-    auto chatsController = router->addController(spy::controller::ChatsController::createShared());
-    auto settingsController = router->addController(spy::controller::SettingsController::createShared(
-        controllersHandler->GetController<spy::service::controller::SpySettingsController>()
-    ));
-    auto messagesController = router->addController(spy::controller::MessagesController::createShared());
+        /* Add endpoints */
+        auto chatsController = router->addController(spy::controller::ChatsController::createShared());
+        auto settingsController = router->addController(spy::controller::SettingsController::createShared(
+            controllersHandler->GetController<spy::service::controller::SpySettingsController>()
+        ));
+        auto messagesController = router->addController(spy::controller::MessagesController::createShared());
 
-    #ifdef SPY_SWAGGER_RUNTIME
-        oatpp::web::server::api::Endpoints docEndpoints;
-        docEndpoints.append(chatsController->getEndpoints());
-        docEndpoints.append(settingsController->getEndpoints());
-        docEndpoints.append(messagesController->getEndpoints());
+        #ifdef SPY_SWAGGER_RUNTIME
+            oatpp::web::server::api::Endpoints docEndpoints;
+            docEndpoints.append(chatsController->getEndpoints());
+            docEndpoints.append(settingsController->getEndpoints());
+            docEndpoints.append(messagesController->getEndpoints());
 
-        router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
-    #endif // SPY_SWAGGER_RUNTIME
+            router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
+        #endif // SPY_SWAGGER_RUNTIME
 
-    router->addController(spy::controller::StaticController::createShared());
+        router->addController(spy::controller::StaticController::createShared());
 
 
-    /* Initialize server */
-    OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, connectionHandler);
-    OATPP_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, connectionProvider);
+        /* Initialize server */
+        OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, connectionHandler);
+        OATPP_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, connectionProvider);
 
-    oatpp::network::Server server(
-        connectionProvider,
-        connectionHandler
-    );
+        oatpp::network::Server server(
+            connectionProvider,
+            connectionHandler
+        );
 
-    /* Print some info */
-    spy::utils::CmdParserSingleton::Get()->GetArgument<std::string>("log_level") == "debug" ? printf("\n\n") : printf("\n");
-    SPY_LOGI("Rest server:Running on http://localhost:%d", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
+        /* Print some info */
+        spy::utils::CmdParserSingleton::Get()->GetArgument<std::string>("log_level") == "debug" ? printf("\n\n") : printf("\n");
+        SPY_LOGI("Rest server:Running on http://localhost:%d", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
 
-    #ifdef SPY_SWAGGER_RUNTIME
-        SPY_LOGI("Rest server:Endpoints on http://localhost:%d/swagger/ui\n", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
-    #endif // SPY_SWAGGER_RUNTIME
+        #ifdef SPY_SWAGGER_RUNTIME
+            SPY_LOGI("Rest server:Endpoints on http://localhost:%d/swagger/ui\n", spy::utils::CmdParserSingleton::Get()->GetArgument<int>("port"));
+        #endif // SPY_SWAGGER_RUNTIME
 
-    /* Start rest server */
-    server.run();
+        /* Start rest server */
+        server.run();
+    #else
+        std::mutex mtx;
+        std::unique_lock<std::mutex> lock(mtx);
+        std::condition_variable condition;
+        condition.wait(lock);
+    #endif // SPY_ENABLE_WEB_SERVER_RUNTIME
 
 
     /* Destroying oatpp environment */

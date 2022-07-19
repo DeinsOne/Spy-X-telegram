@@ -1,6 +1,5 @@
 
 find_package(oatpp          1.3.0 REQUIRED)
-find_package(oatpp-swagger  1.3.0 REQUIRED)
 find_package(oatpp-sqlite   1.3.0 REQUIRED)
 find_package(cxxopts REQUIRED)
 find_package(Threads REQUIRED)
@@ -38,7 +37,6 @@ target_link_libraries(tgspy
   PUBLIC tdlpp
   PUBLIC Threads::Threads
   PRIVATE oatpp::oatpp
-  PRIVATE oatpp::oatpp-swagger
   PRIVATE oatpp::oatpp-sqlite
   PRIVATE cxxopts::cxxopts
   PRIVATE jsoncpp_static
@@ -52,7 +50,20 @@ target_compile_definitions(tgspy
 target_include_directories(tgspy PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../)
 target_include_directories(tgspy PRIVATE ${CMAKE_BINARY_DIR}/external/td/install/include)
 
-if (${SPY_ENABLE_SWAGGER_RUNTIME})
+
+if (${SPY_ENABLE_WEB_SERVER_RUNTIME})
+  target_compile_definitions(tgspy
+    PRIVATE -DSPY_ENABLE_WEB_SERVER_RUNTIME=TRUE
+  )
+endif()
+
+if (${SPY_ENABLE_SWAGGER_RUNTIME} AND ${SPY_ENABLE_WEB_SERVER_RUNTIME})
+  find_package(oatpp-swagger  1.3.0 REQUIRED)
+
+  target_link_libraries(tgspy
+    PRIVATE oatpp::oatpp-swagger
+  )
+
   install(DIRECTORY "${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res"
     DESTINATION resources/swagger
   )
