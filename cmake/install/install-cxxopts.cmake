@@ -19,9 +19,6 @@ endfunction()
 macro(include_cxxopts)
   set(cxxopts_DIR ${CMAKE_BINARY_DIR}/external/cxxopts/install/lib/cmake/cxxopts CACHE PATH "Cxxopts prefix")
 
-  list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR}/external/cxxopts/install)
-  list(APPEND CMAKE_PREFIX_PATH ${cxxopts_DIR})
-
   find_package(cxxopts REQUIRED NO_DEFAULT_PATH)
 
 endmacro()

@@ -49,6 +49,7 @@ namespace spy { namespace service { namespace controller { namespace command {
         std::shared_ptr<tdlpp::base::TdlppHandler> tdHandler;
         std::shared_ptr<ControllersHandler> controllerHandler;
 
+        ChatsGroupType chatsGroup;
         std::unordered_map<std::int64_t, std::string> titles;
 
         bool inProcess{true};

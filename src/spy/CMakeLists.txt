@@ -1,9 +1,9 @@
 
 find_package(oatpp          1.3.0 REQUIRED)
-find_package(oatpp-swagger  1.3.0 REQUIRED)
 find_package(oatpp-sqlite   1.3.0 REQUIRED)
 find_package(cxxopts REQUIRED)
 find_package(Threads REQUIRED)
+find_package(Filesystem REQUIRED)
 find_package(jsoncpp REQUIRED)
 
 add_executable(tgspy
@@ -37,18 +37,46 @@ target_link_libraries(tgspy
   PUBLIC tdlpp
   PUBLIC Threads::Threads
   PRIVATE oatpp::oatpp
-  PRIVATE oatpp::oatpp-swagger
   PRIVATE oatpp::oatpp-sqlite
   PRIVATE cxxopts::cxxopts
-  PRIVATE stdc++fs
   PRIVATE jsoncpp_static
 )
+
+target_link_libraries(tgspy PRIVATE std::filesystem)
+target_compile_definitions(tgspy
+  PRIVATE -DCXX_FILESYSTEM_IS_EXPERIMENTAL=${CXX_FILESYSTEM_IS_EXPERIMENTAL}
+)
+
 target_include_directories(tgspy PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../)
+target_include_directories(tgspy PRIVATE ${CMAKE_BINARY_DIR}/external/td/install/include)
+
+
+if (${SPY_ENABLE_WEB_SERVER_RUNTIME})
+  target_compile_definitions(tgspy
+    PRIVATE -DSPY_ENABLE_WEB_SERVER_RUNTIME=TRUE
+  )
+endif()
+
+if (${SPY_ENABLE_SWAGGER_RUNTIME} AND ${SPY_ENABLE_WEB_SERVER_RUNTIME})
+  find_package(oatpp-swagger  1.3.0 REQUIRED)
+
+  target_link_libraries(tgspy
+    PRIVATE oatpp::oatpp-swagger
+  )
+
+  install(DIRECTORY "${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res"
+    DESTINATION resources/swagger
+  )
+
+  target_compile_definitions(tgspy
+    PRIVATE -DSPY_SWAGGER_RUNTIME=TRUE
+    PRIVATE -DOATPP_SWAGGER_RES_PATH="resources/swagger/res"
+    PRIVATE -DSWAGGER_ROOT_PATH="/swagger"
+    PRIVATE -DSWAGGER_UI_PATH="/ui"
+  )
+endif()
 
 target_compile_definitions(tgspy
-  ## define path to swagger-ui static resources folder
-  PRIVATE -DOATPP_SWAGGER_RES_PATH="${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res"
-
   ## Path to database migration scripts
   PRIVATE -DDATABASE_MIGRATIONS="resources/migrations/"
 
@@ -56,9 +84,7 @@ target_compile_definitions(tgspy
   PRIVATE -DSPY_DATA_FOLDER="spydata/"
 )
 
-if (${SPY_ENABLE_OPTIMIZATION})
-  target_compile_options(tgspy PRIVATE -O3)
-endif()
+target_compile_options(tgspy PRIVATE ${SPY_COMPILE_OPTIONS})
 
 
 install(TARGETS tgspy DESTINATION ${CMAKE_INSTALL_PREFIX})

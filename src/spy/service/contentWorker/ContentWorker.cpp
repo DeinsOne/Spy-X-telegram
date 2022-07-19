@@ -27,37 +27,37 @@ void spy::service::content::ContentWorkerFactory::DownloadContent(
     }
 }
 
+oatpp::Any spy::service::content::ContentWorkerFactory::GetFromDatabase(const std::int32_t& version) {
+    if (contentWorker) {
+        return contentWorker->GetFromDatabase(version);
+    }
+
+    return nullptr;
+}
 
 spy::service::content::ContentWorkerFactory::ContentWorkerFactory(td::td_api::MessageContent& content, const std::int64_t& message_id, const std::int64_t& chat_id) {
     contentWorker = matchContent(content, message_id, chat_id);
     messageId = (int)message_id;
 }
 
+spy::service::content::ContentWorkerFactory::ContentWorkerFactory(const std::int32_t& td_type_id, const std::int64_t& message_id, const std::int64_t& chat_id) {
+    contentWorker = matchContent(td_type_id, message_id, chat_id);
+    messageId = (int)message_id;
+}
 
 std::shared_ptr<spy::service::content::IContentWorker> spy::service::content::ContentWorkerFactory::matchContent(td::td_api::MessageContent& content, const std::int64_t& message_id, const std::int64_t& chat_id) {
-    std::shared_ptr<IContentWorker> result = nullptr;
+    return matchContent(content.get_id(), message_id, chat_id);
+}
 
-    td::td_api::downcast_call(content, tdlpp::overloaded(
-        [&](td::td_api::messageText& message) {
-            result = std::make_shared<spy::service::content::MessageText>(message_id, chat_id);
-        },
-        [&](td::td_api::messagePhoto& message) {
-            result = std::make_shared<spy::service::content::MessagePhoto>(message_id, chat_id);
-        },
-        [&](td::td_api::messageVideo& message) {
-            result = std::make_shared<spy::service::content::MessageVideo>(message_id, chat_id);
-        },
-        [&](td::td_api::messageVoiceNote& message) {
-            result = std::make_shared<spy::service::content::MessageVoiceNote>(message_id, chat_id);
-        },
-        [&](td::td_api::messageVideoNote& message) {
-            result = std::make_shared<spy::service::content::MessageVideoNote>(message_id, chat_id);
-        },
-        [&](td::td_api::messageDocument& message) {
-            result = std::make_shared<spy::service::content::MessageDocument>(message_id, chat_id);
-        },
-        [&](auto&) {}
-    ));
+std::shared_ptr<spy::service::content::IContentWorker> spy::service::content::ContentWorkerFactory::matchContent(const std::int32_t& td_type_id, const std::int64_t& message_id, const std::int64_t& chat_id) {
+    switch (td_type_id) {
+        case td::td_api::messageText::ID: return std::make_shared<spy::service::content::MessageText>(message_id, chat_id);
+        case td::td_api::messagePhoto::ID: return std::make_shared<spy::service::content::MessagePhoto>(message_id, chat_id);
+        case td::td_api::messageVideo::ID: return std::make_shared<spy::service::content::MessageVideo>(message_id, chat_id);
+        case td::td_api::messageVoiceNote::ID: return std::make_shared<spy::service::content::MessageVoiceNote>(message_id, chat_id);
+        case td::td_api::messageVideoNote::ID: return std::make_shared<spy::service::content::MessageVideoNote>(message_id, chat_id);
+        case td::td_api::messageDocument::ID: return std::make_shared<spy::service::content::MessageDocument>(message_id, chat_id);
+    }
 
-    return result;
+    return nullptr;
 }

@@ -18,9 +18,6 @@ endfunction()
 macro(include_jsoncpp)
   set(jsoncpp_DIR ${CMAKE_BINARY_DIR}/external/jsoncpp/install/lib/cmake/jsoncpp CACHE PATH "Jsoncpp prefix")
 
-  list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR}/external/jsoncpp/install)
-  list(APPEND CMAKE_PREFIX_PATH ${jsoncpp_DIR})
-
   find_package(jsoncpp REQUIRED NO_DEFAULT_PATH)
 
 endmacro()

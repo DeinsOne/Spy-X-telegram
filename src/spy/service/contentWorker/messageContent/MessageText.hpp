@@ -5,6 +5,7 @@
 #include <spy/service/contentWorker/ContentWorker.hpp>
 #include <oatpp/core/macro/component.hpp>
 #include <spy/db/MessagesDatabase/MessagesDatabase.hpp>
+#include <spy/dto/messageContent/MessageText.hpp>
 
 #include <spy/service/functions/Utils/FormattedTextToMarkdown.hpp>
 
@@ -51,6 +52,10 @@ namespace spy { namespace service { namespace content {
             const std::shared_ptr<controller::ControllersHandler>& controllers,
             const std::shared_ptr<tdlpp::base::TdlppHandler>& handler
         ) override {
+        }
+
+        virtual oatpp::Any GetFromDatabase(const std::int32_t& version) override {
+            return content::GetFromDatabase<spy::dto::messageContent::MessageTextDto>(messagesDb, "messageText", chat_id, message_id, version);
         }
 
     private:

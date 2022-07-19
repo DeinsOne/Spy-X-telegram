@@ -49,7 +49,7 @@ void spy::service::controller::command::SetExcludeChannelsCommand::Cencel() {
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
-    "The command was cancelled, now you can use other commands";
+    "The command was cancelled 😟, now you can use other one";
 
     functions::SendMessage sendMessage(text, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
     sendMessage.Execute();
@@ -62,10 +62,12 @@ void spy::service::controller::command::SetExcludeChannelsCommand::sendPropositi
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
-    "To enable channels excludeing send `on`/`true`/`exclude`/`enable`. To disable send `off`/`false`/`include`/`disable`\n\n" \
-    "*Exclude channels*: ";
+    "*Exclude channels* 🎙\n\n" \
+    "Channels parsing can cause to unlimited media junk downloading. With this command you can control channels parsing behaviour.\n\n" \
+    "To enable channels parsing send *parse* or *on*. To disable send *ignore* or *off*. To cancel use `/cancel` command.\n\n" \
+    "*Carrent behaviour:*\n   ";
 
-    std::string type = settings->GetForceExcludeChannels() ? "enable" : "disable";
+    std::string type = settings->GetForceExcludeChannels() ? "`ignore`" : "`parse`";
 
     functions::SendMessage sendMessage(text + type, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
     sendMessage.Execute();
@@ -76,8 +78,8 @@ void spy::service::controller::command::SetExcludeChannelsCommand::sendPropositi
 void spy::service::controller::command::SetExcludeChannelsCommand::sendTryAgainMessage() {
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
-    std::string text = "" \
-    "Bad input for `/setexcludechannels`. To cancel this command send `/cancel`, or try again";
+    std::string text = "" 
+    "Probably there is some mistake so try again ☹️ To cancel use `/cancel` command.";
 
     functions::SendMessage sendMessage(text, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
     sendMessage.Execute();
@@ -90,12 +92,9 @@ void spy::service::controller::command::SetExcludeChannelsCommand::sendSuccessMe
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
-    "Edit successfully saved. Now you can use other commands\n\n" \
-    "*Exclude channels*: ";
+    "Edit successfully saved 🙃 Now you can use other commands";
 
-    std::string type = settings->GetForceExcludeChannels() ? "enable" : "disable";
-
-    functions::SendMessage sendMessage(text + type, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
+    functions::SendMessage sendMessage(text, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
     sendMessage.Execute();
 
     skipMessage = true;
@@ -104,11 +103,11 @@ void spy::service::controller::command::SetExcludeChannelsCommand::sendSuccessMe
 bool spy::service::controller::command::SetExcludeChannelsCommand::setExcludeChannels(const std::string& argument) {
     auto param = StringTools::toLower(argument);
 
-    if (param == "on" || param == "true" || param == "enable" || param == "exclude" || param == "1") {
+    if (param == "on" || param == "true" || param == "enable" || param == "exclude" || param == "1" || param == "ignore") {
         this->controllerHandler->GetController<SpySettingsController>()->SetForceExcludeChannels(true);
         return true;
     }
-    else if (param == "off" || param == "false" || param == "disable" || param == "include" || param == "0") {
+    else if (param == "off" || param == "false" || param == "disable" || param == "include" || param == "0" || param == "parse") {
         this->controllerHandler->GetController<SpySettingsController>()->SetForceExcludeChannels(false);
         return true;
     }

@@ -8,6 +8,8 @@
 #include <spy/service/controller/ControllersHandler.hpp>
 #include <tdlpp/base/Handler.hpp>
 
+#include <spy/db/ChatsDatabase/ChatsDatabase.hpp>
+
 namespace spy { namespace service { namespace controller { namespace command {
 
     class HelpCommand : public ICommand {
@@ -17,18 +19,19 @@ namespace spy { namespace service { namespace controller { namespace command {
             const std::shared_ptr<tdlpp::base::TdlppHandler>& tdHandler,
             const std::shared_ptr<ControllersHandler>& controllerHandler
         ) {
-            auto cpmmand = std::make_shared<HelpCommand>();
-            cpmmand->tdHandler = tdHandler;
-            cpmmand->controllerHandler = controllerHandler;
-            return cpmmand;
+            return std::make_shared<HelpCommand>(tdHandler, controllerHandler);
         }
 
+        HelpCommand(
+            const std::shared_ptr<tdlpp::base::TdlppHandler>& tdHandler,
+            const std::shared_ptr<ControllersHandler>& controllerHandler
+        );
+
     public:
-        virtual bool IsDone() override;
+        virtual void Process(const std::string& commandLine) override;
 
         virtual void Cencel() override;
-
-        virtual void Process(const std::string& commandLine) override;
+        virtual bool IsDone() override;
 
         static const std::int64_t ID = 64324454;
         virtual std::int64_t get_id() { return HelpCommand::ID; };
@@ -36,8 +39,13 @@ namespace spy { namespace service { namespace controller { namespace command {
     protected:
         std::shared_ptr<tdlpp::base::TdlppHandler> tdHandler;
         std::shared_ptr<ControllersHandler> controllerHandler;
+        std::unordered_map<std::int64_t, std::string> titles;
 
         bool inProcess{true};
+
+    private:
+        OATPP_COMPONENT(std::shared_ptr<db::ChatsDatabase>, chatsDb);
+
     };
 
 } } } }

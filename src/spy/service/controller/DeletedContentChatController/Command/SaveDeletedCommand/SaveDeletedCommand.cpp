@@ -49,7 +49,7 @@ void spy::service::controller::command::SaveDeletedCommand::Cencel() {
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
-    "The command was cancelled, now you can use other one";
+    "The command was cancelled 🤨, now you can use other one";
 
     functions::SendMessage sendMessage(text, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
     sendMessage.Execute();
@@ -62,10 +62,12 @@ void spy::service::controller::command::SaveDeletedCommand::sendProposition() {
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
-    "To enable saving of deleted content send `save`/`enable`. To disable send `ignore`/`disable`\n\n" \
-    "*Save deleted*: ";
+    "*Save deleted* 🗑\n\n" \
+    "You can control what to do with deleted media. If you choose save, all the media will be saved to have locally copy once deleted.\n\n" \
+    "To save deleted send `save` or `ignore`. To cancel use `/cancel` command.\n\n" \
+    "*Carrent behaviour:*\n   ";
 
-    std::string type = settings->GetSaveDeletedMedia() ? "enable" : "disable";
+    std::string type = settings->GetSaveDeletedMedia() ? "`save`" : "`ignore`";
 
     functions::SendMessage sendMessage(text + type, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
     sendMessage.Execute();
@@ -76,8 +78,8 @@ void spy::service::controller::command::SaveDeletedCommand::sendProposition() {
 void spy::service::controller::command::SaveDeletedCommand::sendTryAgainMessage() {
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
-    std::string text = "" \
-    "Bad input for /savedeleted. To cancel this command send `/cancel`, or try again";
+    std::string text = "" 
+    "Probably there is some mistake so try again 😦 To cancel use `/cancel` command.";
 
     functions::SendMessage sendMessage(text, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
     sendMessage.Execute();
@@ -90,12 +92,9 @@ void spy::service::controller::command::SaveDeletedCommand::sendSuccessMessage()
     auto deletedChatController = this->controllerHandler->GetController<DeletedContentChatController>();
 
     std::string text = "" \
-    "Edit successfully saved. Now you can use other commands\n\n" \
-    "*Save deleted*: ";
+    "Edit successfully saved 🤤 Now you can use other commands";
 
-    std::string type = settings->GetSaveDeletedMedia() ? "enable" : "disable";
-
-    functions::SendMessage sendMessage(text + type, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
+    functions::SendMessage sendMessage(text, deletedChatController->GetDeletedContentChatId(), this->tdHandler);
     sendMessage.Execute();
 
     skipMessage = true;

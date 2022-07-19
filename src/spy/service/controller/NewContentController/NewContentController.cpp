@@ -13,12 +13,12 @@
 #include <spy/utils/Logger/SpyLog.h>
 #include <IdNameBinding.hpp>
 
-#if defined(WIN32) || defined(_WIN32)
-    #include <filesystem>
-    namespace fs = std::filesystem;
-#else
+#if (CXX_FILESYSTEM_IS_EXPERIMENTAL == true)
     #include <experimental/filesystem>
     namespace fs = std::experimental::filesystem;
+#else
+    #include <filesystem>
+    namespace fs = std::filesystem;
 #endif
 
 void spy::service::controller::NewContentController::Initialize(const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {
@@ -81,7 +81,7 @@ void spy::service::controller::NewContentController::onUpdateNewMessage(td::td_a
     }
 
     // Process message
-    SPY_LOGD("NewContentController:onUpdateNewMessage -> %s id: %ld", TDLPP_TD_ID_NAME(update.message_->content_->get_id()), update.message_->id_);
+    SPY_LOGD("NewContentController:onUpdateNewMessage -> %s id: %ld", TDLPP_TD_ID_NAME(update.message_->content_->get_id()), (int)update.message_->id_);
 
     // Download file if any is attached
     auto worker = std::make_shared<service::content::ContentWorkerFactory>(*update.message_->content_, (int)update.message_->id_, (int)update.message_->chat_id_);
@@ -127,7 +127,7 @@ void spy::service::controller::NewContentController::onUpdateFile(td::td_api::up
         size = update.file_->local_->downloaded_size_;
     }
 
-    messagesDb->AddFile(update.file_->remote_->unique_id_, newpath, size);
+    messagesDb->AddFile(update.file_->remote_->unique_id_, newpath.string(), size);
 }
 
 void spy::service::controller::NewContentController::onUpdateChatLastMessage(td::td_api::updateChatLastMessage& update, const std::shared_ptr<tdlpp::base::TdlppHandler>& handler) {

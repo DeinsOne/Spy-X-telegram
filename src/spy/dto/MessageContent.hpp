@@ -1,16 +1,14 @@
 
-#ifndef spy_MessageContent
-#define spy_MessageContent
-
-#include <oatpp/core/macro/codegen.hpp>
-#include <oatpp/core/Types.hpp>
+#ifndef spy_MessageContentDto
+#define spy_MessageContentDto
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
 namespace spy { namespace dto { namespace messageContent {
 
-    class MessageContent : public oatpp::DTO {
-        DTO_INIT(MessageContent, DTO)
+    template<typename TContent>
+    class MessageContentDto : public TContent {
+        DTO_INIT(MessageContentDto, TContent)
 
         DTO_FIELD(oatpp::Int64, id);
         DTO_FIELD(oatpp::Int64, chat_id);
@@ -22,4 +20,4 @@ namespace spy { namespace dto { namespace messageContent {
 
 #include OATPP_CODEGEN_END(DTO)
 
-#endif //spy_MessageContent
+#endif // spy_MessageContentDto

@@ -18,9 +18,6 @@ endfunction()
 macro(include_plog)
   set(plog_DIR ${CMAKE_BINARY_DIR}/external/plog/install/lib/cmake/plog CACHE PATH "Plog prefix")
 
-  list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR}/external/plog/install)
-  list(APPEND CMAKE_PREFIX_PATH ${plog_DIR})
-
   find_package(plog REQUIRED NO_DEFAULT_PATH)
 
 endmacro()
