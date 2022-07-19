@@ -72,7 +72,6 @@ To control application’s behaviour spy x telegram provides several command lin
 | Param | Description | Default
 | --- | --- | --- |
 | -p,--port | Integer parameter, defines rest server port | 8089 |
-| -r,--rest | Boolean parameter which is responsible for launching rest server | true |
 | --log_level | Controls amount of information printed to console. By default is set to info, but you can also use the fallowing values in incremental information order: `fatal`, `error`, `warning`, `info`, `debug` | info |
 | -h,--help |  |  |
 | -v,--version |  |  |
