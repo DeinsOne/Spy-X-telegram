@@ -1,6 +1,6 @@
 # Spy X Telegram
 
-This is release v0.1.21. For changes and new features see the [changelog](CHANGELOG.md).
+This is release v0.2.1. For changes and new features see the [changelog](CHANGELOG.md).
 
 ## Spy X Telegram overview
 

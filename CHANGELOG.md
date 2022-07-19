@@ -1,6 +1,15 @@
 Version History
 ---------------
 
+### Changes in v0.2.1:
+
+ - Added built in swagger documentation
+ - Added new endpoint controllers for messages and spy settings
+ - Extendad brand stickerpack with Stella and Tonitrus(https://t.me/addstickers/tgspy)
+ - Fixed msvc windows multiple definition error while compilation 
+ - Fixed supergroup commands to contain brief description and and options
+
+
 ### Changes in v0.1.21:
 
  - Added media controller supergroup handling user's commands.
